@@ -3,153 +3,212 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PromptAlpha — AI Prompt Studio for Finance Professionals</title>
+<title>PromptAlpha — AI Prompt Builder for Finance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F4F6FA;
-    --card: #FFFFFF;
-    --card-soft: #EEF2F8;
-    --border: #E1E7F0;
-    --text: #16213A;
+    --bg: #EEF2FA;
+    --card: rgba(255,255,255,0.72);
+    --card-solid: #FFFFFF;
+    --card-soft: #E7ECF7;
+    --border: rgba(148,163,184,0.35);
+    --text: #101828;
     --muted: #64748B;
+    --blue: #3B6FD9;
+    --blue-dark: #2C55B0;
     --teal: #0E9488;
-    --teal-dark: #0B786E;
     --amber: #D97706;
     --rose: #E1594B;
-    --shadow: 0 6px 20px rgba(22, 33, 58, 0.06);
+    --shadow: 0 8px 28px rgba(59, 111, 217, 0.12);
+    --blur: blur(14px);
   }
   [data-theme="dark"] {
-    --bg: #0B1220;
-    --card: #121A2C;
-    --card-soft: #182238;
-    --border: #223252;
+    --bg: #0A0F1C;
+    --card: rgba(22,30,50,0.68);
+    --card-solid: #161E32;
+    --card-soft: #1B2439;
+    --border: rgba(100,120,160,0.25);
     --text: #E6EAF2;
     --muted: #8794A8;
+    --blue: #5B8DEF;
+    --blue-dark: #4472D6;
     --teal: #2DD4BF;
-    --teal-dark: #14B8A6;
     --amber: #FBBF24;
     --rose: #F87171;
-    --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
   }
   * { box-sizing: border-box; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
-  ::selection { background: var(--teal); color: #fff; }
+  ::selection { background: var(--blue); color: #fff; }
   body {
     margin: 0;
-    background: var(--bg);
+    background:
+      radial-gradient(circle at 10% 0%, rgba(91,141,239,0.12) 0%, transparent 45%),
+      radial-gradient(circle at 95% 20%, rgba(45,212,191,0.10) 0%, transparent 40%),
+      var(--bg);
     color: var(--text);
     font-family: 'Inter', sans-serif;
-    padding: 26px 16px 72px;
+    padding: 24px 14px 90px;
     min-height: 100vh;
     transition: background 0.3s ease, color 0.3s ease;
   }
-  .container { max-width: 920px; margin: 0 auto; }
+  .container { max-width: 960px; margin: 0 auto; }
 
-  /* header */
-  .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 22px; }
-  .brand-eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.16em;
-    color: var(--teal); font-weight: 700; margin-bottom: 8px;
-  }
-  h1 { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(22px, 4.2vw, 30px); margin: 0; line-height: 1.2; }
-  .subtitle { color: var(--muted); font-size: 14px; margin-top: 8px; max-width: 520px; line-height: 1.55; }
+  .glass { background: var(--card); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); }
+
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+  .brand-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--blue); font-weight: 700; margin-bottom: 8px; }
+  h1 { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(21px, 4vw, 28px); margin: 0; line-height: 1.2; }
+  .subtitle { color: var(--muted); font-size: 13.5px; margin-top: 7px; max-width: 540px; line-height: 1.55; }
   .theme-btn {
-    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    background: var(--card); backdrop-filter: var(--blur); border: 1px solid var(--border); color: var(--text);
     width: 40px; height: 40px; border-radius: 12px; cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: 17px;
-    box-shadow: var(--shadow); transition: transform 0.15s ease;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: var(--shadow);
   }
   .theme-btn:active { transform: scale(0.92); }
 
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
-
-  /* controls */
-  .control-row { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; align-items: stretch; }
-  .mode-select-wrap { flex: 1; min-width: 220px; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: stretch; }
   select#modeSelect {
-    width: 100%; appearance: none; -webkit-appearance: none;
-    background: var(--card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%2364748B" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 14px center;
-    border: 1px solid var(--border); color: var(--text); font-family: 'Inter', sans-serif;
-    font-weight: 600; font-size: 14px; padding: 12px 38px 12px 14px; border-radius: 12px;
-    box-shadow: var(--shadow); cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background: var(--card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%2364748B" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 12px center;
+    backdrop-filter: var(--blur); border: 1px solid var(--border); color: var(--text); font-weight: 600; font-size: 13.5px;
+    padding: 10px 32px 10px 13px; border-radius: 12px; box-shadow: var(--shadow); cursor: pointer; flex: 1; min-width: 180px;
   }
-  .model-toggle { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; box-shadow: var(--shadow); }
-  .model-toggle button {
-    background: transparent; border: none; color: var(--muted); font-size: 12.5px; font-weight: 600;
-    padding: 9px 14px; border-radius: 9px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s ease; white-space: nowrap;
+  .model-toggle { display: flex; gap: 3px; background: var(--card); backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 12px; padding: 4px; box-shadow: var(--shadow); }
+  .model-toggle button { background: transparent; border: none; color: var(--muted); font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 9px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+  .model-toggle button.active { background: var(--blue); color: #fff; }
+  .tool-btn {
+    background: var(--card); backdrop-filter: var(--blur); border: 1px solid var(--border); color: var(--text);
+    font-size: 12.5px; font-weight: 700; padding: 10px 15px; border-radius: 12px; cursor: pointer; box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 6px; transition: transform 0.15s ease;
   }
-  .model-toggle button.active { background: var(--teal); color: #fff; }
-  .mode-desc { font-size: 12px; color: var(--muted); margin: -8px 0 16px 2px; line-height: 1.5; min-height: 18px; }
+  .tool-btn:hover { transform: translateY(-1px); }
+  .tool-btn:active { transform: scale(0.96); }
+  .tool-btn.accent { background: var(--blue); color: #fff; border-color: transparent; }
+  .mode-desc { font-size: 11.5px; color: var(--muted); margin: -6px 0 14px 3px; line-height: 1.5; min-height: 16px; }
 
-  /* stats */
-  .stats-strip { display: flex; gap: 20px; flex-wrap: wrap; padding: 18px 22px; margin-bottom: 18px; }
-  .stat-block { display: flex; flex-direction: column; min-width: 80px; }
-  .stat-label { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 10px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
-  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; line-height: 1; }
+  .quickstats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; padding: 14px 6px; margin-bottom: 14px; }
+  .qstat { text-align: center; padding: 4px 4px; border-right: 1px solid var(--border); }
+  .qstat:last-child { border-right: none; }
+  .qstat-label { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .qstat-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; margin-top: 3px; }
+  @media (max-width: 680px) {
+    .quickstats { grid-template-columns: repeat(3, 1fr); }
+    .qstat { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  }
+
+  .stats-strip { display: flex; gap: 18px; flex-wrap: wrap; padding: 16px 20px; margin-bottom: 14px; }
+  .stat-block { display: flex; flex-direction: column; min-width: 76px; }
+  .stat-label { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 9.5px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; line-height: 1; }
   .stat-value.muted { color: var(--muted); }
-  .stat-value.teal { color: var(--teal); }
+  .stat-value.blue { color: var(--blue); }
   .stat-value.amber { color: var(--amber); }
-  .stat-value.rose { color: var(--rose); }
-  .stat-unit { font-size: 10.5px; color: var(--muted); margin-top: 3px; font-weight: 500; }
-  .stats-divider { width: 1px; background: var(--border); margin: 2px 0; }
-
-  .quality-block { flex: 1; min-width: 180px; }
-  .quality-nums { display: flex; align-items: baseline; gap: 8px; }
-  .quality-arrow { color: var(--muted); font-size: 14px; }
-  .quality-bar-track { height: 6px; background: var(--card-soft); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+  .stat-unit { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .stats-divider { width: 1px; background: var(--border); }
+  .quality-block { flex: 1; min-width: 170px; }
+  .quality-nums { display: flex; align-items: baseline; gap: 7px; }
+  .quality-bar-track { height: 6px; background: var(--card-soft); border-radius: 4px; margin-top: 7px; overflow: hidden; }
   .quality-bar-fill { height: 100%; width: 0%; border-radius: 4px; background: var(--muted); transition: width 1s cubic-bezier(.34,1.2,.64,1), background 0.3s ease; }
 
-  /* grid */
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 680px) {
-    .grid { grid-template-columns: 1fr; }
-    .control-row { flex-direction: column; }
-    .topbar { flex-direction: row; }
-  }
-  .pane { display: flex; flex-direction: column; min-height: 300px; overflow: hidden; }
-  .pane-header { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--border); }
-  .pane-label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px; letter-spacing: 0.03em; color: var(--text); }
-  textarea {
-    flex: 1; background: transparent; border: none; outline: none; resize: none; color: var(--text);
-    font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; padding: 15px 16px; min-height: 220px;
-  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } }
+  .pane { display: flex; flex-direction: column; min-height: 280px; overflow: hidden; }
+  .pane-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--border); }
+  .pane-label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12px; }
+  textarea { flex: 1; background: transparent; border: none; outline: none; resize: none; color: var(--text); font-size: 13.5px; line-height: 1.6; padding: 14px 15px; min-height: 200px; font-family: 'Inter', sans-serif; }
   textarea::placeholder { color: var(--muted); opacity: 0.6; }
-  .output-area { flex: 1; padding: 15px 16px; overflow-y: auto; min-height: 220px; }
-  .output-text { margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; animation: fadeUp 0.4s ease; }
+  .output-area { flex: 1; padding: 14px 15px; overflow-y: auto; min-height: 200px; }
+  .output-text { margin: 0; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; animation: fadeUp 0.4s ease; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-  .placeholder { color: var(--muted); font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
-  .error-text { color: var(--rose); font-size: 13.5px; white-space: pre-wrap; line-height: 1.5; }
-  .pane-footer { display: flex; justify-content: space-between; align-items: center; padding: 11px 16px; border-top: 1px solid var(--border); }
-  .footer-btns { display: flex; gap: 8px; }
-  .token-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
-  .ghost-btn {
-    background: var(--card-soft); border: 1px solid var(--border); color: var(--teal-dark); font-size: 11.5px;
-    font-weight: 600; padding: 6px 11px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease;
-  }
+  .placeholder { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 7px; }
+  .error-text { color: var(--rose); font-size: 13px; white-space: pre-wrap; line-height: 1.5; }
+  .pane-footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+  .footer-btns { display: flex; gap: 7px; }
+  .token-tag { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); }
+  .ghost-btn { background: var(--card-soft); border: 1px solid var(--border); color: var(--blue-dark); font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
   .ghost-btn:hover { background: var(--border); }
-  .text-btn { background: transparent; border: none; color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 7px 4px; }
+  .text-btn { background: transparent; border: none; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; padding: 6px 4px; }
   .text-btn:hover { color: var(--rose); }
-  .primary-btn {
-    background: var(--teal); border: none; color: #fff; font-size: 13.5px; font-weight: 700; padding: 9px 18px;
-    border-radius: 10px; cursor: pointer; transition: transform 0.15s ease, background 0.15s ease;
-  }
-  .primary-btn:hover:not(:disabled) { background: var(--teal-dark); transform: translateY(-1px); }
-  .primary-btn:active:not(:disabled) { transform: scale(0.96); }
+  .primary-btn { background: var(--blue); border: none; color: #fff; font-size: 13px; font-weight: 700; padding: 9px 17px; border-radius: 10px; cursor: pointer; transition: transform 0.15s ease, background 0.15s ease; }
+  .primary-btn:hover:not(:disabled) { background: var(--blue-dark); transform: translateY(-1px); }
   .primary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* improvements box */
-  .improvements-box { margin-top: 14px; padding: 16px 20px; animation: fadeUp 0.4s ease; }
-  .improvements-label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--teal-dark); margin-bottom: 10px; }
-  .improvements-list { margin: 0; padding-left: 0; list-style: none; font-size: 13px; line-height: 1.8; }
-  .improvements-list li { display: flex; gap: 9px; align-items: flex-start; }
-  .improvements-list li::before { content: "▸"; color: var(--teal); flex-shrink: 0; font-size: 12px; margin-top: 2px; }
-  .notes-text { margin-top: 10px; color: var(--muted); font-size: 11.5px; font-style: italic; line-height: 1.5; }
+  .improvements-box { margin-top: 14px; padding: 15px 19px; animation: fadeUp 0.4s ease; }
+  .improvements-label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12px; color: var(--blue-dark); margin-bottom: 9px; }
+  .improvements-list { margin: 0; padding-left: 0; list-style: none; font-size: 12.5px; line-height: 1.8; }
+  .improvements-list li { display: flex; gap: 8px; align-items: flex-start; }
+  .improvements-list li::before { content: "▸"; color: var(--blue); flex-shrink: 0; margin-top: 2px; }
+  .notes-text { margin-top: 9px; color: var(--muted); font-size: 11px; font-style: italic; line-height: 1.5; }
 
-  .page-footer { margin-top: 26px; color: var(--muted); font-size: 11px; text-align: center; line-height: 1.6; }
+  .page-footer { margin-top: 24px; color: var(--muted); font-size: 10.5px; text-align: center; line-height: 1.6; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(10,15,28,0.55); backdrop-filter: blur(4px);
+    z-index: 100; align-items: flex-start; justify-content: center; padding: 26px 14px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; animation: overlayIn 0.2s ease; }
+  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-box {
+    background: var(--card-solid); border: 1px solid var(--border); border-radius: 18px; max-width: 640px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.28s cubic-bezier(.34,1.1,.64,1); max-height: 88vh; display: flex; flex-direction: column;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .modal-title { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 16px; }
+  .modal-close { background: var(--card-soft); border: none; width: 30px; height: 30px; border-radius: 9px; color: var(--text); cursor: pointer; font-size: 15px; }
+  .modal-body { padding: 16px 20px; overflow-y: auto; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 10px; }
+
+  .lib-search { width: 100%; padding: 10px 13px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-soft); color: var(--text); font-size: 13px; margin-bottom: 14px; outline: none; }
+  .lib-category { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .lib-cat-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; font-weight: 700; font-size: 13.5px; background: var(--card-soft); }
+  .lib-cat-header .chevron { transition: transform 0.2s ease; color: var(--muted); font-size: 12px; }
+  .lib-category.open .chevron { transform: rotate(180deg); }
+  .lib-cat-items { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .lib-category.open .lib-cat-items { max-height: 2000px; }
+  .lib-item { padding: 11px 14px; border-top: 1px solid var(--border); }
+  .lib-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .lib-item-title { font-weight: 700; font-size: 13px; }
+  .lib-item-desc { color: var(--muted); font-size: 11.5px; margin-top: 3px; line-height: 1.5; }
+  .lib-item-meta { display: flex; gap: 8px; margin-top: 7px; flex-wrap: wrap; }
+  .lib-badge { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; padding: 3px 8px; border-radius: 6px; background: var(--card-soft); color: var(--muted); font-weight: 600; }
+  .lib-badge.beginner { color: var(--teal); }
+  .lib-badge.intermediate { color: var(--amber); }
+  .lib-badge.advanced { color: var(--rose); }
+  .lib-load-btn { background: var(--blue); color: #fff; border: none; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; flex-shrink: 0; }
+  .lib-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0; }
+
+  .wiz-progress { display: flex; gap: 4px; margin-bottom: 16px; }
+  .wiz-progress-dot { flex: 1; height: 4px; border-radius: 3px; background: var(--card-soft); }
+  .wiz-progress-dot.done { background: var(--blue); }
+  .wiz-step-title { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+  .wiz-step-sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1px solid var(--border); background: var(--card-soft); color: var(--text); font-size: 12.5px; font-weight: 600;
+    padding: 9px 14px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease;
+  }
+  .chip.selected { background: var(--blue); color: #fff; border-color: transparent; }
+  .wiz-textarea { width: 100%; min-height: 70px; border: 1px solid var(--border); background: var(--card-soft); color: var(--text); border-radius: 10px; padding: 10px 12px; font-size: 13px; font-family: 'Inter', sans-serif; resize: vertical; margin-top: 10px; outline: none; }
+
+  .fh-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .fh-tab { flex: 1; text-align: center; padding: 8px; border-radius: 9px; background: var(--card-soft); font-size: 12.5px; font-weight: 700; cursor: pointer; color: var(--muted); }
+  .fh-tab.active { background: var(--blue); color: #fff; }
+  .fh-item { padding: 11px 13px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .fh-item-text { font-size: 12px; line-height: 1.5; color: var(--text); flex: 1; cursor: pointer; }
+  .fh-item-text:hover { color: var(--blue); }
+  .fh-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .fh-icon-btn { background: var(--card-soft); border: none; width: 26px; height: 26px; border-radius: 7px; cursor: pointer; font-size: 12px; color: var(--muted); }
+
+  .sticky-actions {
+    position: sticky; bottom: 10px; display: none; gap: 8px; padding: 10px; margin-top: 10px;
+    background: var(--card); backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+  }
+  @media (max-width: 680px) { .sticky-actions { display: flex; } }
 </style>
 </head>
 <body>
@@ -158,30 +217,34 @@
   <div class="topbar">
     <div>
       <div class="brand-eyebrow">PROMPTALPHA</div>
-      <h1>Research-grade prompts,<br/>built in seconds.</h1>
-      <p class="subtitle">Pick a research mode and PromptAlpha restructures your prompt with the analytical framework analysts actually use — before you send it to ChatGPT, Claude, or Gemini.</p>
+      <h1>Build, optimize, and reuse<br/>research-grade prompts.</h1>
+      <p class="subtitle">Pick from a prompt library, build one step-by-step, or paste your own — then optimize it with a finance-aware AI pass before sending it to ChatGPT, Claude, or Gemini.</p>
     </div>
     <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
   </div>
 
-  <div class="control-row">
-    <div class="mode-select-wrap">
-      <select id="modeSelect"></select>
-    </div>
+  <div class="toolbar">
+    <select id="modeSelect"></select>
     <div class="model-toggle" id="modelToggle">
       <button data-model="llama-3.1-8b-instant" class="active">⚡ Fast</button>
       <button data-model="llama-3.3-70b-versatile">✦ Better</button>
     </div>
+    <button class="tool-btn" id="openLibraryBtn">📚 Sample Library</button>
+    <button class="tool-btn accent" id="openWizardBtn">🧭 Build Prompt</button>
+    <button class="tool-btn" id="openFavBtn">★ Saved</button>
   </div>
   <div class="mode-desc" id="modeDesc"></div>
 
-  <div class="card stats-strip">
-    <div class="stat-block">
-      <div class="stat-label">TOKENS BEFORE</div>
-      <div class="stat-value muted" id="statInput">0</div>
-      <div class="stat-unit">est.</div>
-    </div>
-    <div class="stats-divider"></div>
+  <div class="glass quickstats" id="quickStats">
+    <div class="qstat"><div class="qstat-label">SCORE</div><div class="qstat-value" id="qsScore">—</div></div>
+    <div class="qstat"><div class="qstat-label">WORDS</div><div class="qstat-value" id="qsWords">0</div></div>
+    <div class="qstat"><div class="qstat-label">TOKENS</div><div class="qstat-value" id="qsTokens">0</div></div>
+    <div class="qstat"><div class="qstat-label">EST. COST</div><div class="qstat-value" id="qsCost">$0.00</div></div>
+    <div class="qstat"><div class="qstat-label">READ TIME</div><div class="qstat-value" id="qsRead">0s</div></div>
+    <div class="qstat"><div class="qstat-label">COMPLEXITY</div><div class="qstat-value" id="qsComplexity">—</div></div>
+  </div>
+
+  <div class="glass stats-strip">
     <div class="stat-block">
       <div class="stat-label">TOKENS AFTER</div>
       <div class="stat-value" id="statOutput">—</div>
@@ -195,11 +258,11 @@
     </div>
     <div class="stats-divider"></div>
     <div class="quality-block">
-      <div class="stat-label">PROMPT QUALITY SCORE</div>
+      <div class="stat-label">AI QUALITY SCORE</div>
       <div class="quality-nums">
-        <span class="stat-value muted" id="qualityBefore" style="font-size:18px;">—</span>
-        <span class="quality-arrow">→</span>
-        <span class="stat-value teal" id="qualityAfter" style="font-size:24px;">—</span>
+        <span class="stat-value muted" id="qualityBefore" style="font-size:16px;">—</span>
+        <span style="color:var(--muted);font-size:13px;">→</span>
+        <span class="stat-value blue" id="qualityAfter" style="font-size:22px;">—</span>
         <span class="stat-unit">/100</span>
       </div>
       <div class="quality-bar-track"><div class="quality-bar-fill" id="qualityBar"></div></div>
@@ -207,12 +270,12 @@
   </div>
 
   <div class="grid">
-    <div class="pane card">
+    <div class="pane glass">
       <div class="pane-header">
         <span class="pane-label">Original Prompt</span>
-        <button class="ghost-btn" id="sampleBtn">Load sample →</button>
+        <button class="ghost-btn" id="saveFavBtn">★ Save</button>
       </div>
-      <textarea id="inputText" placeholder="Paste your prompt here…"></textarea>
+      <textarea id="inputText" placeholder="Paste a prompt, load one from the library, or build one step-by-step…"></textarea>
       <div class="pane-footer">
         <span class="token-tag" id="inputTokenTag">0 tokens (est.)</span>
         <div class="footer-btns">
@@ -222,13 +285,13 @@
       </div>
     </div>
 
-    <div class="pane card">
+    <div class="pane glass">
       <div class="pane-header">
         <span class="pane-label">Optimized Prompt</span>
         <button class="ghost-btn" id="copyBtn" style="display:none;">Copy</button>
       </div>
       <div class="output-area" id="outputArea">
-        <div class="placeholder">Your research-grade prompt will appear here.</div>
+        <div class="placeholder">Your optimized prompt will appear here.</div>
       </div>
       <div class="pane-footer" id="outputFooter" style="display:none;">
         <span class="token-tag" id="outputTokenTag"></span>
@@ -236,135 +299,145 @@
     </div>
   </div>
 
-  <div class="improvements-box card" id="improvementsBox" style="display:none;">
+  <div class="glass improvements-box" id="improvementsBox" style="display:none;">
     <div class="improvements-label">FINANCE-SPECIFIC IMPROVEMENTS</div>
     <ul class="improvements-list" id="improvementsList"></ul>
     <div class="notes-text" id="notesText"></div>
   </div>
 
+  <div class="sticky-actions">
+    <button class="tool-btn" id="stickyClear" style="flex:1;">Clear</button>
+    <button class="primary-btn" id="stickyOptimize" style="flex:2;">Optimize</button>
+  </div>
+
   <div class="page-footer">
-    Token counts and quality scores are AI-generated estimates, not exact figures. Runs on a free-tier backend — please be reasonable with usage.
+    Token counts, cost estimates, and prompt scores are approximations, not live provider pricing or exact figures — verify against your provider's current rates before relying on the cost estimate.
+  </div>
+</div>
+
+<div class="modal-overlay" id="libraryModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📚 Sample Prompt Library</span>
+      <button class="modal-close" id="closeLibraryBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="text" class="lib-search" id="librarySearch" placeholder="Search prompts…" />
+      <div id="libraryCategories"></div>
+      <div class="lib-empty" id="libraryEmpty" style="display:none;">No prompts match your search.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="wizardModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">🧭 Build a Prompt</span>
+      <button class="modal-close" id="closeWizardBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="wiz-progress" id="wizProgress"></div>
+      <div id="wizStepContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="text-btn" id="wizBackBtn">Back</button>
+      <button class="primary-btn" id="wizNextBtn">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="favModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">★ Saved &amp; Recent</span>
+      <button class="modal-close" id="closeFavBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fh-tabs">
+        <div class="fh-tab active" id="favTab" data-tab="favorites">Favorites</div>
+        <div class="fh-tab" id="recentTab" data-tab="recent">Recently Used</div>
+      </div>
+      <div id="fhList"></div>
+    </div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   CONFIG — Research modes. Add a new mode by adding an entry
-   here; nothing else needs to change to make it show up in the
-   dropdown and drive the system prompt.
-   ============================================================ */
 const MODES = {
-  general: {
-    label: "General",
-    description: "Improve grammar, clarity, structure, and brevity — no finance framework applied.",
-    dimensions: [],
-    samples: [
-      "Hi, can you help me understand what's going on with this company's margins? I looked at the last few quarters and it seems like they're getting worse but I'm not totally sure why. Can you explain the possible reasons and whether this is something to be worried about?",
-      "I'm putting together some notes for a call with our portfolio manager tomorrow about a stock we've been watching. Could you help me think through the main things I should be prepared to talk about? I don't want to miss anything obvious but I also don't want to just list every possible metric — I want it to feel focused and like I actually have a view.",
-      "I've been going back and forth on how to frame a write-up for my team. It's for a mid-cap name that's had a rough year and I want to explain why I think it's turned a corner, but I keep rewriting the intro and it's not landing. Can you help me figure out a better way to structure the whole thing so it reads clearly from start to finish?",
-    ],
-  },
-  equity: {
-    label: "Equity Research",
-    description: "Adds standard equity analyst coverage points: drivers, margins, cash flow, valuation, catalysts, risks.",
-    dimensions: [
-      "revenue drivers", "growth outlook", "gross margin and operating margin", "cash flow generation",
-      "capital allocation", "management guidance", "competitive positioning", "valuation considerations",
-      "key catalysts", "investment risks",
-    ],
-    samples: [
-      "Analyze this company's latest quarter and tell me if the stock is a buy.",
-      "I need to write up initiation coverage on a company in the semiconductor space. I have their last two years of financials and the most recent earnings call transcript. Can you help me put together an analysis that covers the important stuff — I know I should look at things like margins and growth, but I want to make sure I'm not missing anything an experienced analyst would check before putting a rating on this.",
-      "Our team is debating whether to add this name to the model portfolio. Some people think the growth story is intact, others think the recent guidance cut is a red flag. I have the transcript and the 10-Q. Can you help me build out a proper analysis that weighs both sides fairly, including what the valuation would need to look like to justify each view?",
-    ],
-  },
-  credit: {
-    label: "Credit Research",
-    description: "Adds credit-analyst framework: liquidity, leverage, covenants, refinancing and default risk.",
-    dimensions: [
-      "liquidity analysis", "debt maturity schedule", "interest coverage", "leverage ratios",
-      "covenant analysis", "cash flow adequacy", "refinancing risk", "default risk",
-      "credit strengths and weaknesses",
-    ],
-    samples: [
-      "Look at this company's balance sheet and tell me if their debt is a concern.",
-      "We hold this company's bonds and there's a maturity coming up in about 18 months. I want to understand whether they'll be able to refinance it comfortably or if this could be a problem given where rates are right now. I have their latest financials and the bond indenture. What should I be checking?",
-      "I'm reviewing a credit for a leveraged loan we're considering. The sponsor's deck is obviously optimistic, so I want a more skeptical read using the actual financials and credit agreement I have. Can you help me put together an honest assessment of whether the leverage is sustainable and where the covenant headroom actually stands?",
-    ],
-  },
-  modeling: {
-    label: "Financial Modeling",
-    description: "Adds modeling rigor: assumptions, drivers, sensitivities, scenarios, error checks.",
-    dimensions: [
-      "key assumptions", "revenue drivers", "margin assumptions", "formula explanations",
-      "sensitivity analysis", "scenario analysis", "error checks", "model risks",
-    ],
-    samples: [
-      "Help me build a 3-statement model for this company for the next 5 years.",
-      "I'm building out a DCF for a company ahead of a client presentation and I want to sanity check my approach before I go further. I have historical financials for the last 4 years and some rough assumptions about growth and margins. Can you help me think through what the key drivers should be and how I should structure the sensitivity analysis so it actually shows something useful to the client?",
-      "I inherited a model from a colleague who left the team and I don't fully trust it — some of the formulas look inconsistent between years and I'm not sure what assumptions are actually driving the output. Can you help me think through a systematic way to audit it, check for errors, and document the key assumptions clearly so I can present it with confidence?",
-    ],
-  },
-  earnings: {
-    label: "Earnings Call Analysis",
-    description: "Adds call-analysis structure: guidance changes, tone, segment performance, Q&A themes.",
-    dimensions: [
-      "executive summary", "guidance changes", "management tone", "analyst questions",
-      "segment performance", "risks discussed", "opportunities", "future outlook",
-    ],
-    samples: [
-      "Summarize the key points from this earnings call transcript.",
-      "I just finished listening to this earnings call live and I have the transcript now. I want to send my PM a summary within the hour, but I don't want it to just be a list of numbers he can get from the press release — he wants to know what actually changed in management's tone and whether the analyst questions revealed anything the company was cagey about.",
-      "This is the third quarter in a row this management team has guided down and then beat their own lowered guidance. I have the transcripts from all three quarters. Can you help me pull together an analysis of whether this is a pattern of conservative guidance or an actual deteriorating business, using how their language and tone has shifted over the three calls?",
-    ],
-  },
-  sec: {
-    label: "SEC Filing Analysis",
-    description: "Adds filing-review structure: MD&A, risk factors, segments, legal proceedings.",
-    dimensions: [
-      "business overview", "financial highlights", "risk factors", "MD&A summary",
-      "segment analysis", "capital allocation", "legal proceedings", "forward-looking statements",
-    ],
-    samples: [
-      "Summarize the important parts of this 10-K filing.",
-      "I have this year's 10-K and I'm trying to figure out what changed from last year's risk factors section — the company added some new language that seems important but it's buried in a lot of boilerplate. Can you help me pull out what's actually new or different and explain why it might matter?",
-      "I'm doing a first pass on a company I don't cover yet, using their most recent 10-K. I want a solid working understanding of the business — segments, how they make money, what management is worried about — before I go any further, but I don't have time to read the whole thing line by line today.",
-    ],
-  },
-  memo: {
-    label: "Investment Memo",
-    description: "Structures the ask as a full investment memo: thesis, bull/bear case, valuation, recommendation.",
-    dimensions: [
-      "investment thesis", "bull case", "bear case", "valuation summary",
-      "key risks", "catalysts", "recommendation",
-    ],
-    samples: [
-      "Write up an investment case for this company.",
-      "I need to present a name to our investment committee next week and I want the memo to feel balanced, not like I've already made up my mind. I have my research notes and the latest financials. Can you help me structure this so both the bull and bear cases are genuinely represented, with a clear view on what would need to be true for each to play out?",
-      "I've been going back and forth on this position for weeks and I think it's time to just get my thinking down on paper properly. I have a lot of scattered notes, some valuation work, and a few risks I keep coming back to. Can you help me pull this into something that actually reads like a coherent memo instead of a pile of notes?",
-    ],
-  },
-  diligence: {
-    label: "Due Diligence",
-    description: "Adds a diligence checklist: business & financial quality, management, competitive and legal risk.",
-    dimensions: [
-      "business quality", "financial quality", "management assessment", "competitive landscape",
-      "industry outlook", "operational risks", "legal risks", "investment conclusion",
-    ],
-    samples: [
-      "We're evaluating this company as a potential acquisition target — what should I look into?",
-      "We're a few weeks into diligence on a potential add-on acquisition and the deal team wants a structured view of where things stand. I have the data room documents and management's projections. Can you help me think through what's genuinely strong about this business versus what management is putting a positive spin on, so I can flag real concerns before we go further?",
-      "This target looks great on paper but something about the customer concentration numbers is bothering me and I can't quite articulate why to the rest of the deal team. I have the customer data and financials. Can you help me work through whether this concentration is actually a risk worth killing the deal over, or something that's manageable with the right protections in the agreement?",
-    ],
-  },
+  general: { label: "General", description: "Improve grammar, clarity, structure, and brevity — no finance framework applied.", dimensions: [] },
+  equity: { label: "Equity Research", description: "Adds standard equity analyst coverage points.", dimensions: ["revenue drivers","growth outlook","gross margin and operating margin","cash flow generation","capital allocation","management guidance","competitive positioning","valuation considerations","key catalysts","investment risks"] },
+  credit: { label: "Credit Research", description: "Adds credit-analyst framework.", dimensions: ["liquidity analysis","debt maturity schedule","interest coverage","leverage ratios","covenant analysis","cash flow adequacy","refinancing risk","default risk","credit strengths and weaknesses"] },
+  modeling: { label: "Financial Modeling", description: "Adds modeling rigor.", dimensions: ["key assumptions","revenue drivers","margin assumptions","formula explanations","sensitivity analysis","scenario analysis","error checks","model risks"] },
+  earnings: { label: "Earnings Call Analysis", description: "Adds call-analysis structure.", dimensions: ["executive summary","guidance changes","management tone","analyst questions","segment performance","risks discussed","opportunities","future outlook"] },
+  sec: { label: "SEC Filing Analysis", description: "Adds filing-review structure.", dimensions: ["business overview","financial highlights","risk factors","MD&A summary","segment analysis","capital allocation","legal proceedings","forward-looking statements"] },
+  memo: { label: "Investment Memo", description: "Structures the ask as a full investment memo.", dimensions: ["investment thesis","bull case","bear case","valuation summary","key risks","catalysts","recommendation"] },
+  diligence: { label: "Due Diligence", description: "Adds a diligence checklist.", dimensions: ["business quality","financial quality","management assessment","competitive landscape","industry outlook","operational risks","legal risks","investment conclusion"] },
+  mna: { label: "M&A Analysis", description: "Adds M&A deal-analysis structure.", dimensions: ["deal rationale","revenue and cost synergies","valuation methodology","accretion/dilution impact","financing structure","integration risks","regulatory and antitrust risk","comparable transactions"] },
+  industry: { label: "Industry Research", description: "Adds industry/strategy framework.", dimensions: ["market size and growth","competitive landscape","regulatory environment","industry drivers","disruption risks","key player positioning","supply chain considerations","secular trends"] },
+  portfolio: { label: "Portfolio Management", description: "Adds portfolio review structure.", dimensions: ["position sizing and attribution","risk exposure","correlation and diversification","benchmark comparison","rebalancing considerations","thesis validation","catalysts and watch items","risk/reward reassessment"] },
 };
 
-/* ============================================================
-   TOKEN ESTIMATE — heuristic only.
-   TODO(future): swap for real tiktoken-based counting once a
-   tokenizer library is wired in (see "Future Ready" notes at
-   bottom of file).
-   ============================================================ */
+const LIBRARY = [
+  { key: "equity", emoji: "📈", name: "Equity Research", items: [
+    { title: "Quick quarter read", description: "Fast take on whether the latest quarter supports the current view.", difficulty: "Beginner", length: "Short", text: "Analyze this company's latest quarter and tell me if the stock is a buy." },
+    { title: "Initiation coverage", description: "Full first-time coverage write-up using financials and the latest call.", difficulty: "Intermediate", length: "Long", text: "I need to write up initiation coverage on a company in the semiconductor space. I have their last two years of financials and the most recent earnings call transcript. Can you help me put together an analysis that covers the important stuff — I know I should look at things like margins and growth, but I want to make sure I'm not missing anything an experienced analyst would check before putting a rating on this." },
+    { title: "Bull vs. bear debate", description: "Weigh both sides of a contested name before a portfolio decision.", difficulty: "Advanced", length: "Long", text: "Our team is debating whether to add this name to the model portfolio. Some people think the growth story is intact, others think the recent guidance cut is a red flag. I have the transcript and the 10-Q. Can you help me build out a proper analysis that weighs both sides fairly, including what the valuation would need to look like to justify each view?" },
+  ]},
+  { key: "earnings", emoji: "📞", name: "Earnings Call Analysis", items: [
+    { title: "Transcript summary", description: "Quick top-line summary of a call transcript.", difficulty: "Beginner", length: "Short", text: "Summarize the key points from this earnings call transcript." },
+    { title: "PM briefing after a live call", description: "Turn a call you just listened to into a tight PM-ready summary.", difficulty: "Intermediate", length: "Medium", text: "I just finished listening to this earnings call live and I have the transcript now. I want to send my PM a summary within the hour, but I don't want it to just be a list of numbers he can get from the press release — he wants to know what actually changed in management's tone and whether the analyst questions revealed anything the company was cagey about." },
+    { title: "Guidance pattern across quarters", description: "Detect whether repeated guide-downs are conservatism or deterioration.", difficulty: "Advanced", length: "Long", text: "This is the third quarter in a row this management team has guided down and then beat their own lowered guidance. I have the transcripts from all three quarters. Can you help me pull together an analysis of whether this is a pattern of conservative guidance or an actual deteriorating business, using how their language and tone has shifted over the three calls?" },
+  ]},
+  { key: "sec", emoji: "📑", name: "SEC Filing Analysis", items: [
+    { title: "10-K quick summary", description: "High-level pass on a 10-K filing.", difficulty: "Beginner", length: "Short", text: "Summarize the important parts of this 10-K filing." },
+    { title: "Risk factor delta", description: "Spot what changed in this year's risk factors vs. last year's.", difficulty: "Intermediate", length: "Medium", text: "I have this year's 10-K and I'm trying to figure out what changed from last year's risk factors section — the company added some new language that seems important but it's buried in a lot of boilerplate. Can you help me pull out what's actually new or different and explain why it might matter?" },
+    { title: "First-pass on a new name", description: "Build a working understanding of a company you don't cover yet.", difficulty: "Intermediate", length: "Medium", text: "I'm doing a first pass on a company I don't cover yet, using their most recent 10-K. I want a solid working understanding of the business — segments, how they make money, what management is worried about — before I go any further, but I don't have time to read the whole thing line by line today." },
+  ]},
+  { key: "credit", emoji: "🏦", name: "Credit Research", items: [
+    { title: "Quick balance sheet check", description: "Fast read on whether debt levels are a concern.", difficulty: "Beginner", length: "Short", text: "Look at this company's balance sheet and tell me if their debt is a concern." },
+    { title: "Refinancing risk on a maturity", description: "Assess whether an upcoming bond maturity is refinanceable.", difficulty: "Intermediate", length: "Medium", text: "We hold this company's bonds and there's a maturity coming up in about 18 months. I want to understand whether they'll be able to refinance it comfortably or if this could be a problem given where rates are right now. I have their latest financials and the bond indenture. What should I be checking?" },
+    { title: "Skeptical leveraged loan review", description: "Cut through sponsor optimism using the actual credit agreement.", difficulty: "Advanced", length: "Long", text: "I'm reviewing a credit for a leveraged loan we're considering. The sponsor's deck is obviously optimistic, so I want a more skeptical read using the actual financials and credit agreement I have. Can you help me put together an honest assessment of whether the leverage is sustainable and where the covenant headroom actually stands?" },
+  ]},
+  { key: "modeling", emoji: "📊", name: "Financial Modeling", items: [
+    { title: "3-statement model build", description: "Kick off a 5-year 3-statement projection.", difficulty: "Beginner", length: "Short", text: "Help me build a 3-statement model for this company for the next 5 years." },
+    { title: "DCF sanity check", description: "Stress-test a DCF approach before a client presentation.", difficulty: "Intermediate", length: "Long", text: "I'm building out a DCF for a company ahead of a client presentation and I want to sanity check my approach before I go further. I have historical financials for the last 4 years and some rough assumptions about growth and margins. Can you help me think through what the key drivers should be and how I should structure the sensitivity analysis so it actually shows something useful to the client?" },
+    { title: "Audit an inherited model", description: "Systematically check a model you didn't build for errors.", difficulty: "Advanced", length: "Long", text: "I inherited a model from a colleague who left the team and I don't fully trust it — some of the formulas look inconsistent between years and I'm not sure what assumptions are actually driving the output. Can you help me think through a systematic way to audit it, check for errors, and document the key assumptions clearly so I can present it with confidence?" },
+  ]},
+  { key: "mna", emoji: "💼", name: "Investment Banking", items: [
+    { title: "M&A rationale check", description: "Sense-check the strategic logic of a potential deal.", difficulty: "Intermediate", length: "Medium", text: "We're looking at a potential acquisition and I want to pressure-test the deal rationale before it goes further internally. I have the target's financials and a rough synergy estimate from the deal team. Can you help me think through whether the stated rationale actually holds up?" },
+    { title: "Accretion/dilution walk-through", description: "Think through the mechanics of a stock-and-cash deal.", difficulty: "Advanced", length: "Long", text: "I'm modeling a potential acquisition that would be funded partly in stock and partly in cash, and I need to walk through the accretion/dilution math carefully before presenting to the committee. I have both companies' financials. Can you help me structure this so I don't miss a key driver of the outcome?" },
+    { title: "Comparable transactions memo", description: "Build a defensible comps set for a pending deal.", difficulty: "Advanced", length: "Long", text: "I need to put together a comparable transactions analysis to support a valuation range for a deal we're advising on. I have a rough list of past transactions in the space. Can you help me think through which ones are actually comparable and how to present the analysis so it holds up under scrutiny?" },
+  ]},
+  { key: "industry", emoji: "🌍", name: "Industry & Strategy", items: [
+    { title: "Industry landscape scan", description: "Get oriented in a new industry before deeper research.", difficulty: "Beginner", length: "Short", text: "Give me an overview of this industry — who the major players are and what's driving growth." },
+    { title: "Disruption risk assessment", description: "Evaluate whether a new entrant or technology threatens incumbents.", difficulty: "Intermediate", length: "Medium", text: "There's a new entrant in this industry using a different business model and I'm trying to figure out how seriously to take the disruption risk to the incumbents I follow. Can you help me think through what would need to be true for this to actually matter, versus what might just be noise?" },
+    { title: "Secular trend positioning", description: "Assess how well-positioned a company is for a multi-year industry shift.", difficulty: "Advanced", length: "Long", text: "I'm trying to understand how well this company is positioned for a multi-year shift happening in their industry, versus companies that talk about it but aren't really adapting. I have their recent investor presentations and some industry data. Can you help me build an honest assessment rather than just taking their positioning at face value?" },
+  ]},
+  { key: "portfolio", emoji: "📋", name: "Portfolio Management", items: [
+    { title: "Position review", description: "Quick check-in on whether a position still fits the thesis.", difficulty: "Beginner", length: "Short", text: "Review this position and tell me if the original thesis still holds." },
+    { title: "Risk exposure review", description: "Understand concentration and correlation risk across holdings.", difficulty: "Intermediate", length: "Medium", text: "I want to review our current exposure across a handful of positions that might be more correlated than they look on the surface. I have position sizes and sector data. Can you help me think through where the real concentration risk sits in the portfolio right now?" },
+    { title: "Full portfolio review memo", description: "Structure a periodic review for an investment committee.", difficulty: "Advanced", length: "Long", text: "I need to prepare a full portfolio review for our investment committee meeting next week, covering attribution, risk exposure, and which theses need revisiting. I have position-level data and recent performance. Can you help me structure this so it reads like a proper review rather than just a data dump?" },
+  ]},
+];
+
+const WIZ_WORKFLOWS = ["equity","credit","earnings","modeling","sec","diligence","memo","mna","industry","portfolio"];
+const WIZ_DOC_TYPES = ["10-K","10-Q","Annual Report","Earnings Transcript","Investor Presentation","Financial Statements","Credit Agreement","Debt Prospectus","Press Release","Internal Research"];
+const WIZ_OBJECTIVES = ["Analyze financial performance","Identify risks","Build valuation","Summarize management commentary","Compare with peers","Review guidance","Review debt profile","Review capital allocation","Identify catalysts","Generate investment thesis"];
+const WIZ_FORMATS = ["Executive Summary","Bullet Points","Detailed Report","Investment Memo","Credit Memo","Table","Markdown","Presentation Style","JSON"];
+const WIZ_DEPTHS = ["Quick Review","Standard Analysis","Deep Institutional Analysis"];
+const WIZ_AUDIENCES = ["Portfolio Manager","Research Analyst","Credit Committee","Investment Committee","CIO","Client Presentation"];
+const WIZ_TONES = ["Professional","Highly Technical","Executive","Concise","Institutional"];
+
+const WIZARD_STEPS = [
+  { key: "workflow", title: "Choose a workflow", sub: "What kind of analysis is this for?", options: WIZ_WORKFLOWS.map((k) => MODES[k].label), allowCustom: false },
+  { key: "docType", title: "Document type", sub: "What are you feeding into the analysis?", options: WIZ_DOC_TYPES, allowCustom: false },
+  { key: "objective", title: "Objective", sub: "Pick the closest match, or write your own below.", options: WIZ_OBJECTIVES, allowCustom: true },
+  { key: "format", title: "Output format", sub: "How should the answer come back?", options: WIZ_FORMATS, allowCustom: false },
+  { key: "depth", title: "Depth", sub: "How thorough should the analysis be?", options: WIZ_DEPTHS, allowCustom: false },
+  { key: "audience", title: "Audience", sub: "Who is this ultimately for?", options: WIZ_AUDIENCES, allowCustom: false },
+  { key: "tone", title: "Tone", sub: "Pick the voice for the response.", options: WIZ_TONES, allowCustom: false },
+];
+
 function estimateTokens(text) {
   if (!text) return 0;
   const clean = text.trim();
@@ -374,10 +447,44 @@ function estimateTokens(text) {
   return Math.round((chars / 4) * 0.6 + words * 0.7 * 0.4);
 }
 
-/* ============================================================
-   SYSTEM PROMPT BUILDER — combines general prompt-engineering
-   rules with mode-specific analytical dimensions.
-   ============================================================ */
+const PRICING_ESTIMATES = { inputPer1M: 3.5 };
+function estimateCost(tokens) { return (tokens / 1000000) * PRICING_ESTIMATES.inputPer1M; }
+function estimateReadingTime(words) {
+  const seconds = Math.round((words / 200) * 60);
+  if (seconds < 60) return seconds + "s";
+  return Math.round(seconds / 60) + "m";
+}
+function estimateComplexity(text) {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+  const avgSentenceLen = sentences.length > 0 ? words.length / sentences.length : words.length;
+  if (words.length < 20) return "Simple";
+  if (avgSentenceLen > 28 || words.length > 150) return "Complex";
+  return "Moderate";
+}
+const VAGUE_PHRASES = ["help me", "can you", "kind of", "sort of", "basically", "stuff", "things", "not sure", "maybe", "please"];
+function heuristicScore(text) {
+  const clean = text.trim();
+  if (!clean) return 0;
+  const words = clean.split(/\s+/).filter(Boolean);
+  let score = 50;
+  if (words.length >= 15) score += 10;
+  if (words.length >= 40) score += 10;
+  if (words.length > 300) score -= 10;
+  const lower = clean.toLowerCase();
+  const vagueHits = VAGUE_PHRASES.filter((p) => lower.includes(p)).length;
+  score -= vagueHits * 4;
+  if (/[:\-•]/.test(clean)) score += 8;
+  if (/\d/.test(clean)) score += 5;
+  return Math.max(5, Math.min(97, Math.round(score)));
+}
+function computeQuickStats(text) {
+  const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+  const tokens = estimateTokens(text);
+  const cost = estimateCost(tokens);
+  return { score: heuristicScore(text), words, tokens, cost, readingTime: estimateReadingTime(words), complexity: text.trim() ? estimateComplexity(text) : "—" };
+}
+
 function buildSystemPrompt(modeKey) {
   const mode = MODES[modeKey];
   const base = `You are an expert prompt engineer who specializes in finance and investment research workflows (equity research, credit research, investment banking, financial modeling). You rewrite prompts that finance professionals intend to send to an LLM (ChatGPT, Claude, Gemini) so the prompt is clearer, better structured, and more likely to produce a rigorous, useful answer.
@@ -391,12 +498,7 @@ Hard rules:
 
   let modeInstructions = "";
   if (mode.dimensions.length > 0) {
-    modeInstructions = `
-
-This prompt is for ${mode.label}. Restructure it so it explicitly directs the model to address the following dimensions, but ONLY the ones actually relevant to what the user is asking — do not force irrelevant asks just to pad the list:
-${mode.dimensions.map((d) => `- ${d}`).join("\n")}
-
-Express these as a compact, explicit instruction inside the rewritten prompt (e.g. a short "cover: ..." list), not as long prose, to keep token growth controlled.`;
+    modeInstructions = "\n\nThis prompt is for " + mode.label + ". Restructure it so it explicitly directs the model to address the following dimensions, but ONLY the ones actually relevant to what the user is asking — do not force irrelevant asks just to pad the list:\n" + mode.dimensions.map((d) => "- " + d).join("\n") + "\n\nExpress these as a compact, explicit instruction inside the rewritten prompt (e.g. a short \"cover: ...\" list), not as long prose, to keep token growth controlled.";
   }
 
   const scoring = `
@@ -420,13 +522,6 @@ function extractJson(raw) {
   throw new Error("Couldn't parse model response: " + cleaned.slice(0, 150));
 }
 
-/* ============================================================
-   BACKEND CALL — routed through a Cloudflare Worker that holds
-   the Groq API key server-side. See worker.js.
-   TODO(future): add provider switch here (OpenAI / Claude /
-   Gemini) once those API integrations are wired in — this is
-   the single choke point where that branching would go.
-   ============================================================ */
 const WORKER_URL = "https://prompt-trimmer-worker.zahoorf6.workers.dev";
 
 async function callWorker(userPrompt, model, modeKey) {
@@ -454,30 +549,34 @@ async function callWorker(userPrompt, model, modeKey) {
   return extractJson(raw);
 }
 
-/* ============================================================
-   UI WIRING
-   ============================================================ */
+const LS_FAV = "promptalpha_favorites";
+const LS_RECENT = "promptalpha_recent";
+function loadList(key) { try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) { return []; } }
+function saveList(key, list) { try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) {} }
+function addFavorite(text) {
+  const list = loadList(LS_FAV);
+  list.unshift({ id: Date.now(), text, ts: new Date().toISOString() });
+  saveList(LS_FAV, list.slice(0, 50));
+}
+function removeFavorite(id) { saveList(LS_FAV, loadList(LS_FAV).filter((i) => i.id !== id)); }
+function pushRecent(text) {
+  const list = loadList(LS_RECENT).filter((i) => i.text !== text);
+  list.unshift({ id: Date.now(), text, ts: new Date().toISOString() });
+  saveList(LS_RECENT, list.slice(0, 10));
+}
+
 const el = (id) => document.getElementById(id);
 let selectedModel = "llama-3.1-8b-instant";
 let selectedMode = "general";
 
-// populate mode dropdown
-const modeSelect = el("modeSelect");
 Object.entries(MODES).forEach(([key, m]) => {
   const opt = document.createElement("option");
-  opt.value = key;
-  opt.textContent = m.label;
-  modeSelect.appendChild(opt);
+  opt.value = key; opt.textContent = m.label;
+  el("modeSelect").appendChild(opt);
 });
-function updateModeDesc() {
-  el("modeDesc").textContent = MODES[selectedMode].description;
-}
+function updateModeDesc() { el("modeDesc").textContent = MODES[selectedMode].description; }
 updateModeDesc();
-
-modeSelect.onchange = () => {
-  selectedMode = modeSelect.value;
-  updateModeDesc();
-};
+el("modeSelect").onchange = () => { selectedMode = el("modeSelect").value; updateModeDesc(); };
 
 document.querySelectorAll("#modelToggle button").forEach((btn) => {
   btn.onclick = () => {
@@ -487,7 +586,6 @@ document.querySelectorAll("#modelToggle button").forEach((btn) => {
   };
 });
 
-// theme toggle
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   el("themeBtn").textContent = theme === "dark" ? "☀️" : "🌙";
@@ -495,53 +593,46 @@ function applyTheme(theme) {
 }
 applyTheme(localStorage.getItem("promptalphaTheme") || "light");
 el("themeBtn").onclick = () => {
-  const current = document.documentElement.getAttribute("data-theme");
-  applyTheme(current === "dark" ? "light" : "dark");
+  applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
 };
 
-function updateOptimizeEnabled() {
+function refreshQuickStats() {
+  const stats = computeQuickStats(el("inputText").value);
+  el("qsScore").textContent = stats.score;
+  el("qsWords").textContent = stats.words;
+  el("qsTokens").textContent = stats.tokens;
+  el("qsCost").textContent = "$" + stats.cost.toFixed(4);
+  el("qsRead").textContent = stats.readingTime;
+  el("qsComplexity").textContent = stats.complexity;
+  el("inputTokenTag").textContent = stats.tokens + " tokens (est.)";
   el("optimizeBtn").disabled = el("inputText").value.trim().length === 0;
 }
+el("inputText").addEventListener("input", refreshQuickStats);
+refreshQuickStats();
 
-el("inputText").addEventListener("input", () => {
-  const t = el("inputText").value;
-  const tok = estimateTokens(t);
-  el("statInput").textContent = tok;
-  el("inputTokenTag").textContent = tok + " tokens (est.)";
-  updateOptimizeEnabled();
-});
+el("clearBtn").onclick = () => { el("inputText").value = ""; refreshQuickStats(); resetOutput(); };
+el("stickyClear").onclick = () => el("clearBtn").click();
+el("stickyOptimize").onclick = () => el("optimizeBtn").click();
 
-const sampleIndex = {};
-el("sampleBtn").onclick = () => {
-  const samples = MODES[selectedMode].samples;
-  const i = sampleIndex[selectedMode] || 0;
-  el("inputText").value = samples[i];
-  sampleIndex[selectedMode] = (i + 1) % samples.length;
-  el("inputText").dispatchEvent(new Event("input"));
-  resetOutput();
-};
-
-el("clearBtn").onclick = () => {
-  el("inputText").value = "";
-  el("inputText").dispatchEvent(new Event("input"));
-  resetOutput();
+el("saveFavBtn").onclick = () => {
+  const text = el("inputText").value.trim();
+  if (!text) return;
+  addFavorite(text);
+  el("saveFavBtn").textContent = "★ Saved ✓";
+  setTimeout(() => (el("saveFavBtn").textContent = "★ Save"), 1500);
 };
 
 function resetOutput() {
-  el("outputArea").innerHTML = '<div class="placeholder">Your research-grade prompt will appear here.</div>';
+  el("outputArea").innerHTML = '<div class="placeholder">Your optimized prompt will appear here.</div>';
   el("outputFooter").style.display = "none";
   el("copyBtn").style.display = "none";
   el("improvementsBox").style.display = "none";
-  el("statOutput").textContent = "—";
-  el("statOutput").className = "stat-value";
+  el("statOutput").textContent = "—"; el("statOutput").className = "stat-value";
   el("statOutputUnit").textContent = "";
-  el("statDelta").textContent = "—";
-  el("statDelta").className = "stat-value";
+  el("statDelta").textContent = "—"; el("statDelta").className = "stat-value";
   el("statDeltaUnit").textContent = "";
-  el("qualityBefore").textContent = "—";
-  el("qualityAfter").textContent = "—";
-  el("qualityBar").style.width = "0%";
-  el("qualityBar").style.background = "var(--muted)";
+  el("qualityBefore").textContent = "—"; el("qualityAfter").textContent = "—";
+  el("qualityBar").style.width = "0%"; el("qualityBar").style.background = "var(--muted)";
 }
 
 function scoreColor(score) {
@@ -549,14 +640,12 @@ function scoreColor(score) {
   if (score >= 50) return "var(--amber)";
   return "var(--rose)";
 }
-
 function animateCount(elId, target, duration) {
   const node = el(elId);
   const start = performance.now();
   function step(ts) {
     const progress = Math.min(1, (ts - start) / duration);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    node.textContent = Math.round(target * eased);
+    node.textContent = Math.round(target * (1 - Math.pow(1 - progress, 3)));
     if (progress < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
@@ -568,16 +657,12 @@ el("optimizeBtn").onclick = async () => {
   el("optimizeBtn").disabled = true;
   el("optimizeBtn").textContent = "Optimizing…";
   el("outputArea").innerHTML = '<div class="placeholder">Applying ' + MODES[selectedMode].label.toLowerCase() + ' framework…</div>';
-  el("outputFooter").style.display = "none";
-  el("copyBtn").style.display = "none";
-  el("improvementsBox").style.display = "none";
+  el("outputFooter").style.display = "none"; el("copyBtn").style.display = "none"; el("improvementsBox").style.display = "none";
 
   const before = estimateTokens(input);
   try {
     const parsed = await callWorker(input, selectedModel, selectedMode);
-    if (!parsed || typeof parsed.optimized !== "string") {
-      throw new Error("Unexpected response shape: " + JSON.stringify(parsed).slice(0, 200));
-    }
+    if (!parsed || typeof parsed.optimized !== "string") throw new Error("Unexpected response shape: " + JSON.stringify(parsed).slice(0, 200));
     const after = estimateTokens(parsed.optimized);
     const delta = before - after;
     const deltaPct = before > 0 ? Math.round((delta / before) * 100) : 0;
@@ -588,11 +673,10 @@ el("optimizeBtn").onclick = async () => {
     el("outputTokenTag").textContent = after + " tokens (est.)";
     el("copyBtn").style.display = "inline-block";
 
-    el("statOutput").className = "stat-value teal";
-    el("statOutputUnit").textContent = "tokens";
+    el("statOutput").className = "stat-value blue"; el("statOutputUnit").textContent = "tokens";
     animateCount("statOutput", after, 600);
 
-    const deltaClass = delta > 0 ? "teal" : delta < 0 ? "amber" : "muted";
+    const deltaClass = delta > 0 ? "blue" : delta < 0 ? "amber" : "muted";
     el("statDelta").className = "stat-value " + deltaClass;
     el("statDelta").textContent = (delta > 0 ? "-" : delta < 0 ? "+" : "") + Math.abs(delta);
     el("statDeltaUnit").textContent = (deltaPct !== 0 ? Math.abs(deltaPct) + "% " : "") + (delta >= 0 ? "lighter" : "added");
@@ -603,60 +687,192 @@ el("optimizeBtn").onclick = async () => {
     if (qAfter !== null) {
       animateCount("qualityAfter", qAfter, 800);
       el("qualityAfter").style.color = scoreColor(qAfter);
-      requestAnimationFrame(() => {
-        el("qualityBar").style.width = qAfter + "%";
-        el("qualityBar").style.background = scoreColor(qAfter);
-      });
+      requestAnimationFrame(() => { el("qualityBar").style.width = qAfter + "%"; el("qualityBar").style.background = scoreColor(qAfter); });
     }
-
     if (Array.isArray(parsed.financeImprovements) && parsed.financeImprovements.length > 0) {
       el("improvementsBox").style.display = "block";
       el("improvementsList").innerHTML = parsed.financeImprovements.map((c) => "<li>" + escapeHtml(c) + "</li>").join("");
       el("notesText").textContent = parsed.notes || "";
     }
+    pushRecent(parsed.optimized);
   } catch (e) {
     el("outputArea").innerHTML = '<div class="error-text"></div>';
     el("outputArea").querySelector(".error-text").textContent = e?.message || "Couldn't optimize that prompt.";
   } finally {
-    el("optimizeBtn").disabled = false;
-    el("optimizeBtn").textContent = "Optimize";
-    updateOptimizeEnabled();
+    el("optimizeBtn").disabled = false; el("optimizeBtn").textContent = "Optimize"; refreshQuickStats();
   }
 };
 
 el("copyBtn").onclick = async () => {
   const text = el("outputArea").querySelector(".output-text")?.textContent;
   if (!text) return;
-  try {
-    await navigator.clipboard.writeText(text);
-    el("copyBtn").textContent = "Copied ✓";
-    setTimeout(() => (el("copyBtn").textContent = "Copy"), 1800);
-  } catch (e) {}
+  try { await navigator.clipboard.writeText(text); el("copyBtn").textContent = "Copied ✓"; setTimeout(() => (el("copyBtn").textContent = "Copy"), 1800); } catch (e) {}
 };
+function escapeHtml(str) { const d = document.createElement("div"); d.textContent = str; return d.innerHTML; }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
+function openModal(id) { el(id).classList.add("open"); }
+function closeModal(id) { el(id).classList.remove("open"); }
+[["openLibraryBtn","libraryModal","closeLibraryBtn"],["openWizardBtn","wizardModal","closeWizardBtn"],["openFavBtn","favModal","closeFavBtn"]].forEach(([openId, modalId, closeId]) => {
+  el(openId).onclick = () => openModal(modalId);
+  el(closeId).onclick = () => closeModal(modalId);
+});
+document.querySelectorAll(".modal-overlay").forEach((ov) => {
+  ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("open"); });
+});
+
+function renderLibrary(filterText) {
+  const container = el("libraryCategories");
+  const q = (filterText || "").toLowerCase().trim();
+  container.innerHTML = "";
+  let anyMatch = false;
+  LIBRARY.forEach((cat) => {
+    const filteredItems = cat.items.filter((it) =>
+      !q || it.title.toLowerCase().includes(q) || it.description.toLowerCase().includes(q) || cat.name.toLowerCase().includes(q)
+    );
+    if (filteredItems.length === 0) return;
+    anyMatch = true;
+    const catEl = document.createElement("div");
+    catEl.className = "lib-category" + (q ? " open" : "");
+    catEl.innerHTML = '<div class="lib-cat-header"><span>' + cat.emoji + " " + cat.name + ' <span style="color:var(--muted);font-weight:500;">(' + filteredItems.length + ')</span></span><span class="chevron">▾</span></div><div class="lib-cat-items"></div>';
+    const itemsWrap = catEl.querySelector(".lib-cat-items");
+    filteredItems.forEach((it) => {
+      const diffClass = it.difficulty.toLowerCase();
+      const itemEl = document.createElement("div");
+      itemEl.className = "lib-item";
+      itemEl.innerHTML = '<div class="lib-item-top"><div><div class="lib-item-title">' + escapeHtml(it.title) + '</div><div class="lib-item-desc">' + escapeHtml(it.description) + '</div><div class="lib-item-meta"><span class="lib-badge ' + diffClass + '">' + it.difficulty + '</span><span class="lib-badge">' + it.length + '</span></div></div><button class="lib-load-btn">Load</button></div>';
+      itemEl.querySelector(".lib-load-btn").onclick = () => {
+        el("inputText").value = it.text;
+        refreshQuickStats();
+        resetOutput();
+        closeModal("libraryModal");
+      };
+      itemsWrap.appendChild(itemEl);
+    });
+    catEl.querySelector(".lib-cat-header").onclick = () => catEl.classList.toggle("open");
+    container.appendChild(catEl);
+  });
+  el("libraryEmpty").style.display = anyMatch ? "none" : "block";
+}
+renderLibrary("");
+el("librarySearch").addEventListener("input", (e) => renderLibrary(e.target.value));
+
+let wizStep = 0;
+let wizSelections = {};
+
+function renderWizProgress() {
+  const wrap = el("wizProgress");
+  wrap.innerHTML = "";
+  WIZARD_STEPS.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.className = "wiz-progress-dot" + (i <= wizStep ? " done" : "");
+    wrap.appendChild(dot);
+  });
 }
 
-/* ============================================================
-   FUTURE READY — intentionally not built yet, hooks left clean:
-   - Real token counting (tiktoken): replace estimateTokens().
-   - OpenAI / Claude / Gemini integration: branch inside callWorker
-     or add a provider param the Worker forwards to a different
-     upstream API.
-   - Cost estimation: derive from real token counts + a per-model
-     pricing table once tiktoken is in.
-   - Browser extension: this file's core logic (buildSystemPrompt,
-     callWorker) is UI-agnostic and could be lifted into a
-     content-script/background-script pair largely as-is.
-   - Prompt history: would store {mode, input, output, scores,
-     timestamp} objects in localStorage, keyed per-browser.
-   - User authentication: would gate localStorage/history behind
-     an identity layer; not needed for the current single-user
-     client-side design.
-   ============================================================ */
+function renderWizStep() {
+  renderWizProgress();
+  const step = WIZARD_STEPS[wizStep];
+  const content = el("wizStepContent");
+  const selected = wizSelections[step.key];
+  content.innerHTML = '<div class="wiz-step-title">' + step.title + '</div><div class="wiz-step-sub">' + step.sub + '</div><div class="chip-group" id="wizChips"></div>' + (step.allowCustom ? '<textarea class="wiz-textarea" id="wizCustom" placeholder="Or describe your own objective…"></textarea>' : "");
+  const chipWrap = el("wizChips");
+  step.options.forEach((opt) => {
+    const chip = document.createElement("div");
+    chip.className = "chip" + (selected === opt ? " selected" : "");
+    chip.textContent = opt;
+    chip.onclick = () => {
+      wizSelections[step.key] = opt;
+      if (step.allowCustom) el("wizCustom").value = "";
+      renderWizStep();
+    };
+    chipWrap.appendChild(chip);
+  });
+  if (step.allowCustom && selected && !step.options.includes(selected)) {
+    el("wizCustom").value = selected;
+  }
+  if (step.allowCustom) {
+    el("wizCustom").addEventListener("input", (e) => {
+      if (e.target.value.trim()) {
+        wizSelections[step.key] = e.target.value.trim();
+        document.querySelectorAll("#wizChips .chip").forEach((c) => c.classList.remove("selected"));
+      }
+    });
+  }
+  el("wizBackBtn").style.visibility = wizStep === 0 ? "hidden" : "visible";
+  el("wizNextBtn").textContent = wizStep === WIZARD_STEPS.length - 1 ? "Generate Prompt" : "Next";
+}
+
+function modeKeyForWorkflowLabel(label) {
+  return Object.keys(MODES).find((k) => MODES[k].label === label);
+}
+
+function generateWizardPrompt(sel) {
+  const modeKey = modeKeyForWorkflowLabel(sel.workflow) || "general";
+  const dims = MODES[modeKey].dimensions;
+  const lines = [];
+  lines.push("Using the attached " + (sel.docType || "document") + ", perform a " + (sel.depth || "standard").toLowerCase() + " " + (sel.workflow || "financial") + " analysis" + (sel.objective ? " focused on: " + sel.objective : "") + ".");
+  if (dims.length > 0) {
+    lines.push("");
+    lines.push("Cover the following where relevant:");
+    dims.forEach((d) => lines.push("- " + d));
+  }
+  lines.push("");
+  lines.push("Output format: " + (sel.format || "Detailed Report") + ".");
+  lines.push("Audience: " + (sel.audience || "Research Analyst") + ".");
+  lines.push("Tone: " + (sel.tone || "Professional") + ".");
+  return lines.join("\n");
+}
+
+el("wizNextBtn").onclick = () => {
+  const step = WIZARD_STEPS[wizStep];
+  if (!wizSelections[step.key]) { el("wizStepContent").querySelector(".wiz-step-sub").style.color = "var(--rose)"; return; }
+  if (wizStep < WIZARD_STEPS.length - 1) {
+    wizStep++;
+    renderWizStep();
+  } else {
+    const generated = generateWizardPrompt(wizSelections);
+    el("inputText").value = generated;
+    refreshQuickStats();
+    resetOutput();
+    const modeKey = modeKeyForWorkflowLabel(wizSelections.workflow);
+    if (modeKey) { el("modeSelect").value = modeKey; selectedMode = modeKey; updateModeDesc(); }
+    pushRecent(generated);
+    closeModal("wizardModal");
+    wizStep = 0; wizSelections = {};
+  }
+};
+el("wizBackBtn").onclick = () => { if (wizStep > 0) { wizStep--; renderWizStep(); } };
+el("openWizardBtn").addEventListener("click", () => { wizStep = 0; wizSelections = {}; renderWizStep(); });
+
+let fhActiveTab = "favorites";
+function renderFhList() {
+  const list = fhActiveTab === "favorites" ? loadList(LS_FAV) : loadList(LS_RECENT);
+  const wrap = el("fhList");
+  wrap.innerHTML = "";
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="lib-empty">' + (fhActiveTab === "favorites" ? "No saved prompts yet." : "No recent prompts yet.") + '</div>';
+    return;
+  }
+  list.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "fh-item";
+    const preview = item.text.length > 140 ? item.text.slice(0, 140) + "…" : item.text;
+    row.innerHTML = '<div class="fh-item-text">' + escapeHtml(preview) + '</div><div class="fh-item-actions">' + (fhActiveTab === "favorites" ? '<button class="fh-icon-btn" title="Remove">✕</button>' : "") + "</div>";
+    row.querySelector(".fh-item-text").onclick = () => {
+      el("inputText").value = item.text;
+      refreshQuickStats();
+      resetOutput();
+      closeModal("favModal");
+    };
+    if (fhActiveTab === "favorites") {
+      row.querySelector(".fh-icon-btn").onclick = (e) => { e.stopPropagation(); removeFavorite(item.id); renderFhList(); };
+    }
+    wrap.appendChild(row);
+  });
+}
+el("favTab").onclick = () => { fhActiveTab = "favorites"; el("favTab").classList.add("active"); el("recentTab").classList.remove("active"); renderFhList(); };
+el("recentTab").onclick = () => { fhActiveTab = "recent"; el("recentTab").classList.add("active"); el("favTab").classList.remove("active"); renderFhList(); };
+el("openFavBtn").addEventListener("click", renderFhList);
 </script>
 </body>
 </html>
