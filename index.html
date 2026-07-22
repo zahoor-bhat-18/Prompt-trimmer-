@@ -280,6 +280,7 @@
   </div>
 </div>
 
+<script src="library.js"></script>
 <script>
 const MODES = {
   general: { label: "General", icon: "✳️", description: "Improve grammar, clarity, structure, and brevity — no finance framework applied.", dimensions: [] },
@@ -294,59 +295,6 @@ const MODES = {
   memo: { label: "Investment Memo", icon: "🗂️", description: "Optimize prompts for investment memos.", dimensions: ["investment thesis","bull case","bear case","valuation summary","key risks","catalysts","recommendation"] },
   diligence: { label: "Due Diligence", icon: "🔍", description: "Optimize prompts for due diligence.", dimensions: ["business quality","financial quality","management assessment","competitive landscape","industry outlook","operational risks","legal risks","investment conclusion"] },
 };
-
-const LIBRARY = [
-  { key: "equity", emoji: "📈", name: "Equity Research", items: [
-    { title: "Quick quarter read", description: "Fast take on whether the latest quarter supports the current view.", difficulty: "Beginner", text: "I looked at this company's latest quarterly results and want a straight answer: does what I'm seeing support staying long, or is this a name to trim? Walk me through the two or three numbers that matter most this quarter and what they imply." },
-    { title: "Initiation coverage", description: "Full first-time coverage write-up using financials and the latest call.", difficulty: "Intermediate", text: "I need to write up initiation coverage on a company in the semiconductor space. I have their last two years of financials and the most recent earnings call transcript. Can you help me put together an analysis that covers the important stuff — I know I should look at things like margins and growth, but I want to make sure I'm not missing anything an experienced analyst would check before putting a rating on this." },
-    { title: "Bull vs. bear debate", description: "Weigh both sides of a contested name before a portfolio decision.", difficulty: "Advanced", text: "Our team is debating whether to add this name to the model portfolio. Some people think the growth story is intact, others think the recent guidance cut is a red flag. I have the transcript and the 10-Q. Can you help me build out a proper analysis that weighs both sides fairly, including what the valuation would need to look like to justify each view?" },
-  ]},
-  { key: "earnings", emoji: "📞", name: "Earnings Calls", items: [
-    { title: "Transcript summary", description: "Quick top-line summary of a call transcript.", difficulty: "Beginner", text: "I have a full earnings call transcript and only ten minutes before my next meeting. Give me the essential takeaways — what changed versus last quarter, and whether management sounded confident or cautious." },
-    { title: "PM briefing after a live call", description: "Turn a call you just listened to into a tight PM-ready summary.", difficulty: "Intermediate", text: "I just finished listening to this earnings call live and I have the transcript now. I want to send my PM a summary within the hour, but I don't want it to just be a list of numbers he can get from the press release — he wants to know what actually changed in management's tone and whether the analyst questions revealed anything the company was cagey about." },
-    { title: "Guidance pattern across quarters", description: "Detect whether repeated guide-downs are conservatism or deterioration.", difficulty: "Advanced", text: "This is the third quarter in a row this management team has guided down and then beat their own lowered guidance. I have the transcripts from all three quarters. Can you help me pull together an analysis of whether this is a pattern of conservative guidance or an actual deteriorating business, using how their language and tone has shifted over the three calls?" },
-  ]},
-  { key: "sec", emoji: "📑", name: "SEC Filing Analysis", items: [
-    { title: "10-K quick summary", description: "High-level pass on a 10-K filing.", difficulty: "Beginner", text: "I have a 10-K I need to get through quickly today. Pull out the business overview, the financial highlights, and anything in the risk factors that stands out as unusual." },
-    { title: "Risk factor delta", description: "Spot what changed in this year's risk factors vs. last year's.", difficulty: "Intermediate", text: "I have this year's 10-K and I'm trying to figure out what changed from last year's risk factors section — the company added some new language that seems important but it's buried in a lot of boilerplate. Can you help me pull out what's actually new or different and explain why it might matter?" },
-    { title: "First-pass on a new name", description: "Build a working understanding of a company you don't cover yet.", difficulty: "Intermediate", text: "I'm doing a first pass on a company I don't cover yet, using their most recent 10-K. I want a solid working understanding of the business — segments, how they make money, what management is worried about — before I go any further, but I don't have time to read the whole thing line by line today." },
-  ]},
-  { key: "credit", emoji: "🏦", name: "Credit Research", items: [
-    { title: "Quick balance sheet check", description: "Fast read on whether debt levels are a concern.", difficulty: "Beginner", text: "I need a quick gut-check on this company's balance sheet — is their debt load something to actually worry about, or is it manageable given their cash flow?" },
-    { title: "Refinancing risk on a maturity", description: "Assess whether an upcoming bond maturity is refinanceable.", difficulty: "Intermediate", text: "We hold this company's bonds and there's a maturity coming up in about 18 months. I want to understand whether they'll be able to refinance it comfortably or if this could be a problem given where rates are right now. I have their latest financials and the bond indenture. What should I be checking?" },
-    { title: "Skeptical leveraged loan review", description: "Cut through sponsor optimism using the actual credit agreement.", difficulty: "Advanced", text: "I'm reviewing a credit for a leveraged loan we're considering. The sponsor's deck is obviously optimistic, so I want a more skeptical read using the actual financials and credit agreement I have. Can you help me put together an honest assessment of whether the leverage is sustainable and where the covenant headroom actually stands?" },
-  ]},
-  { key: "modeling", emoji: "📊", name: "Financial Modeling", items: [
-    { title: "3-statement model build", description: "Kick off a 5-year 3-statement projection.", difficulty: "Beginner", text: "I need to start a 3-statement model for this company covering the next five years. Help me lay out the structure and the key assumptions I'll need before I start filling in formulas." },
-    { title: "DCF sanity check", description: "Stress-test a DCF approach before a client presentation.", difficulty: "Intermediate", text: "I'm building out a DCF for a company ahead of a client presentation and I want to sanity check my approach before I go further. I have historical financials for the last 4 years and some rough assumptions about growth and margins. Can you help me think through what the key drivers should be and how I should structure the sensitivity analysis so it actually shows something useful to the client?" },
-    { title: "Audit an inherited model", description: "Systematically check a model you didn't build for errors.", difficulty: "Advanced", text: "I inherited a model from a colleague who left the team and I don't fully trust it — some of the formulas look inconsistent between years and I'm not sure what assumptions are actually driving the output. Can you help me think through a systematic way to audit it, check for errors, and document the key assumptions clearly so I can present it with confidence?" },
-  ]},
-  { key: "mna", emoji: "💼", name: "Investment Banking", items: [
-    { title: "M&A rationale check", description: "Sense-check the strategic logic of a potential deal.", difficulty: "Intermediate", text: "We're looking at a potential acquisition and I want to pressure-test the deal rationale before it goes further internally. I have the target's financials and a rough synergy estimate from the deal team. Can you help me think through whether the stated rationale actually holds up?" },
-    { title: "Accretion/dilution walk-through", description: "Think through the mechanics of a stock-and-cash deal.", difficulty: "Advanced", text: "I'm modeling a potential acquisition that would be funded partly in stock and partly in cash, and I need to walk through the accretion/dilution math carefully before presenting to the committee. I have both companies' financials. Can you help me structure this so I don't miss a key driver of the outcome?" },
-    { title: "Comparable transactions memo", description: "Build a defensible comps set for a pending deal.", difficulty: "Advanced", text: "I need to put together a comparable transactions analysis to support a valuation range for a deal we're advising on. I have a rough list of past transactions in the space. Can you help me think through which ones are actually comparable and how to present the analysis so it holds up under scrutiny?" },
-  ]},
-  { key: "industry", emoji: "🌍", name: "Industry Research", items: [
-    { title: "Industry landscape scan", description: "Get oriented in a new industry before deeper research.", difficulty: "Beginner", text: "I'm about to start covering a new industry and need to get oriented fast. Give me the major players, what's actually driving growth right now, and the one or two dynamics I should understand before digging into individual companies." },
-    { title: "Disruption risk assessment", description: "Evaluate whether a new entrant or technology threatens incumbents.", difficulty: "Intermediate", text: "There's a new entrant in this industry using a different business model and I'm trying to figure out how seriously to take the disruption risk to the incumbents I follow. Can you help me think through what would need to be true for this to actually matter, versus what might just be noise?" },
-    { title: "Secular trend positioning", description: "Assess how well-positioned a company is for a multi-year industry shift.", difficulty: "Advanced", text: "I'm trying to understand how well this company is positioned for a multi-year shift happening in their industry, versus companies that talk about it but aren't really adapting. I have their recent investor presentations and some industry data. Can you help me build an honest assessment rather than just taking their positioning at face value?" },
-  ]},
-  { key: "portfolio", emoji: "📋", name: "Portfolio Management", items: [
-    { title: "Position review", description: "Quick check-in on whether a position still fits the thesis.", difficulty: "Beginner", text: "I want to check in on one of our positions before our next meeting — has anything happened recently that would challenge the original thesis, or does it still hold up?" },
-    { title: "Risk exposure review", description: "Understand concentration and correlation risk across holdings.", difficulty: "Intermediate", text: "I want to review our current exposure across a handful of positions that might be more correlated than they look on the surface. I have position sizes and sector data. Can you help me think through where the real concentration risk sits in the portfolio right now?" },
-    { title: "Full portfolio review memo", description: "Structure a periodic review for an investment committee.", difficulty: "Advanced", text: "I need to prepare a full portfolio review for our investment committee meeting next week, covering attribution, risk exposure, and which theses need revisiting. I have position-level data and recent performance. Can you help me structure this so it reads like a proper review rather than just a data dump?" },
-  ]},
-  { key: "memo", emoji: "🗂️", name: "Investment Memo", items: [
-    { title: "Quick investment case", description: "Sketch out an initial case before deeper diligence.", difficulty: "Beginner", text: "I want a first-pass investment case for this company before I sink more time into it — is there enough here to justify a proper deep dive?" },
-    { title: "Balanced committee memo", description: "Present both sides genuinely before an investment committee.", difficulty: "Intermediate", text: "I need to present a name to our investment committee next week and I want the memo to feel balanced, not like I've already made up my mind. I have my research notes and the latest financials. Can you help me structure this so both the bull and bear cases are genuinely represented, with a clear view on what would need to be true for each to play out?" },
-    { title: "Long-held conviction write-up", description: "Turn scattered notes on a long-running idea into a coherent memo.", difficulty: "Advanced", text: "I've been going back and forth on this position for weeks and I think it's time to just get my thinking down on paper properly. I have a lot of scattered notes, some valuation work, and a few risks I keep coming back to. Can you help me pull this into something that actually reads like a coherent memo instead of a pile of notes?" },
-  ]},
-  { key: "diligence", emoji: "🔍", name: "Due Diligence", items: [
-    { title: "Early-stage diligence checklist", description: "Get oriented on what to look into for a potential target.", difficulty: "Beginner", text: "We're just starting to evaluate this company as a potential acquisition target. Before I go further, what should I actually be looking into?" },
-    { title: "Mid-diligence structured review", description: "Structure findings partway through a live diligence process.", difficulty: "Intermediate", text: "We're a few weeks into diligence on a potential add-on acquisition and the deal team wants a structured view of where things stand. I have the data room documents and management's projections. Can you help me think through what's genuinely strong about this business versus what management is putting a positive spin on, so I can flag real concerns before we go further?" },
-    { title: "Concentration risk deep-dive", description: "Work through whether customer concentration is a deal-breaker.", difficulty: "Advanced", text: "This target looks great on paper but something about the customer concentration numbers is bothering me and I can't quite articulate why to the rest of the deal team. I have the customer data and financials. Can you help me work through whether this concentration is actually a risk worth killing the deal over, or something that's manageable with the right protections in the agreement?" },
-  ]},
-];
 
 const WIZ_WORKFLOWS = ["equity","credit","earnings","modeling","sec","diligence","memo","mna","industry","portfolio"];
 const WIZ_DOC_TYPES = ["10-K","10-Q","Annual Report","Earnings Transcript","Investor Presentation","Financial Statements","Credit Agreement","Debt Prospectus","Press Release","Internal Research"];
@@ -684,16 +632,66 @@ function renderWizStep() {
   el("wizNextBtn").textContent = wizStep === WIZARD_STEPS.length - 1 ? "Generate Prompt" : "Next";
 }
 function modeKeyForWorkflowLabel(label) { return Object.keys(MODES).find((k) => MODES[k].label === label); }
+
+function roleForAudience(audience) {
+  const map = {
+    "Portfolio Manager": "senior portfolio manager",
+    "Research Analyst": "senior research analyst",
+    "Credit Committee": "senior credit analyst preparing materials for the credit committee",
+    "Investment Committee": "senior analyst preparing materials for the investment committee",
+    "CIO": "senior analyst preparing a briefing for the CIO",
+    "Client Presentation": "senior advisor preparing a client-ready presentation",
+  };
+  return map[audience] || "senior analyst";
+}
+function depthInstruction(depth) {
+  const map = {
+    "Quick Review": "Keep this focused and efficient — prioritize the handful of points that would most influence a decision rather than exhaustive coverage of every angle.",
+    "Standard Analysis": "Provide a thorough, professional-grade analysis covering all relevant dimensions with appropriate supporting detail.",
+    "Deep Institutional Analysis": "Provide a comprehensive, institutional-quality analysis. Be exhaustive — support every material conclusion with specific evidence and address second-order considerations, not just the obvious ones.",
+  };
+  return map[depth] || "Provide a thorough, professional-grade analysis.";
+}
+function capitalizeFirst(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
+/* Wizard output is deliberately long and exhaustive — like the curated
+   library prompts — so Optimize has real, visible work to do. This is
+   the "before" state; Optimize is what demonstrates the token/cost
+   savings. */
 function generateWizardPrompt(sel) {
   const modeKey = modeKeyForWorkflowLabel(sel.workflow) || "general";
   const dims = MODES[modeKey].dimensions;
+  const role = roleForAudience(sel.audience);
   const lines = [];
-  lines.push("Using the attached " + (sel.docType || "document") + ", perform a " + (sel.depth || "standard").toLowerCase() + " " + (sel.workflow || "financial") + " analysis" + (sel.objective ? " focused on: " + sel.objective : "") + ".");
-  if (dims.length > 0) { lines.push(""); lines.push("Cover the following where relevant:"); dims.forEach((d) => lines.push("- " + d)); }
+
+  lines.push("You are a " + role + " specializing in " + (sel.workflow || "financial") + " analysis.");
+  lines.push("");
+  lines.push("Your objective is to conduct a thorough review of the attached " + (sel.docType || "document") + (sel.objective ? " in order to " + sel.objective.charAt(0).toLowerCase() + sel.objective.slice(1) : "") + ". Do not simply summarize the document — identify the information that would materially influence a real decision.");
+  lines.push("");
+  lines.push(depthInstruction(sel.depth));
+
+  if (dims.length > 0) {
+    lines.push("");
+    lines.push("Analyze the following in detail, supporting each conclusion with specific evidence from the document rather than general statements:");
+    dims.forEach((d) => lines.push("- " + capitalizeFirst(d)));
+  }
+
+  lines.push("");
+  lines.push("Identify significant changes or developments versus prior periods, including shifts in strategy, risk profile, guidance, or capital allocation priorities where relevant.");
+  lines.push("");
+  lines.push("Prepare the output using the following structure:");
+  let n = 1;
+  lines.push(n++ + ". Executive Summary");
+  dims.forEach((d) => lines.push(n++ + ". " + capitalizeFirst(d)));
+  lines.push(n++ + ". Key Risks");
+  lines.push(n++ + ". Recommendation / Conclusion");
   lines.push("");
   lines.push("Output format: " + (sel.format || "Detailed Report") + ".");
-  lines.push("Audience: " + (sel.audience || "Research Analyst") + ".");
+  lines.push("Audience: " + (sel.audience || "Research Analyst") + " — calibrate technical depth and framing accordingly.");
   lines.push("Tone: " + (sel.tone || "Professional") + ".");
+  lines.push("");
+  lines.push("Clearly distinguish factual observations from analytical judgment throughout, and support every material conclusion with evidence.");
+
   return lines.join("\n");
 }
 el("wizNextBtn").onclick = () => {
