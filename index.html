@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prompt Trimmer 🌊 — shrink your prompt, keep the meaning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2F7FF;
+    --card: #FFFFFF;
+    --card-soft: #EDF4FF;
+    --border: #DCE9FB;
+    --text: #1F2B44;
+    --muted: #8A97AC;
+    --blue: #4E8CFF;
+    --blue-dark: #2E6BE0;
+    --mint: #3FBF9F;
+    --mint-soft: #E4FAF3;
+    --yellow: #FFC94D;
+    --sky: #7FB8FF;
+    --shadow: 0 8px 24px rgba(78, 140, 255, 0.14);
+  }
+  * { box-sizing: border-box; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  ::selection { background: var(--yellow); color: var(--text); }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(circle at 8% 6%, #E3EEFF 0%, transparent 38%),
+      radial-gradient(circle at 96% 12%, #E1F7F0 0%, transparent 35%),
+      radial-gradient(circle at 92% 92%, #EAF0FF 0%, transparent 40%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Quicksand', sans-serif;
+    padding: 28px 16px 72px;
+    min-height: 100vh;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  .hero { display: flex; align-items: center; gap: 18px; margin-bottom: 8px; flex-wrap: wrap; }
+  .mascot-wrap { flex-shrink: 0; }
+  .eyebrow {
+    font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.14em;
+    color: var(--blue-dark); background: var(--card-soft); display: inline-block;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 10px;
+  }
+  h1 { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: clamp(26px, 5vw, 38px); margin: 0; line-height: 1.15; color: var(--text); }
+  h1 .accent { color: var(--blue); }
+  .subtitle { color: var(--muted); font-size: 15px; margin-top: 10px; line-height: 1.6; max-width: 480px; font-weight: 500; }
+
+  #mascotSvg { display: block; transition: transform 0.4s cubic-bezier(.34,1.56,.64,1); }
+  .mascot-bob { animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.02); } }
+  .mascot-shrink { animation: shrinkPop 0.7s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes shrinkPop { 0% { transform: scale(1); } 45% { transform: scale(0.82) rotate(-4deg); } 70% { transform: scale(1.08) rotate(3deg); } 100% { transform: scale(1) rotate(0); } }
+
+  .card { background: var(--card); border: 2px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
+
+  .control-row { display: flex; justify-content: space-between; align-items: center; margin: 22px 0 20px; gap: 14px; flex-wrap: wrap; }
+  .model-toggle { display: flex; gap: 4px; background: var(--card); border: 2px solid var(--border); border-radius: 999px; padding: 4px; box-shadow: var(--shadow); }
+  .model-toggle button {
+    background: transparent; border: none; color: var(--muted); font-size: 12.5px; font-weight: 700;
+    padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all 0.25s ease;
+  }
+  .model-toggle button.active { background: var(--blue); color: white; }
+  .session-tally {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); font-weight: 600;
+    background: var(--yellow); padding: 6px 14px; border-radius: 999px; opacity: 0;
+    transform: scale(0.8); transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .session-tally.show { opacity: 1; transform: scale(1); }
+  .session-tally b { color: var(--blue-dark); }
+
+  .stats-strip { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; padding: 22px 26px; margin-bottom: 24px; position: relative; }
+  .stat-block { display: flex; flex-direction: column; min-width: 84px; }
+  .stat-label { font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 10.5px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 700; line-height: 1; transition: color 0.3s ease; }
+  .stat-value.muted { color: var(--muted); }
+  .stat-value.blue { color: var(--blue); }
+  .stat-value.mint { color: var(--mint); }
+  .stat-unit { font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .stats-arrow { color: var(--muted); font-size: 20px; }
+  .stats-divider { width: 2px; height: 38px; background: var(--border); margin: 0 2px; border-radius: 2px; }
+
+  .ring-wrap { margin-left: auto; display: none; align-items: center; gap: 10px; }
+  .ring-wrap.show { display: flex; }
+  .ring-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--blue-dark); text-align: right; max-width: 90px; line-height: 1.2; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .control-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .ring-wrap { margin-left: 0; }
+    .hero { flex-direction: column; align-items: flex-start; }
+  }
+  .pane { display: flex; flex-direction: column; min-height: 300px; overflow: hidden; }
+  .pane-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 2px solid var(--border); }
+  .pane-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  textarea {
+    flex: 1; background: transparent; border: none; outline: none; resize: none; color: var(--text);
+    font-family: 'Quicksand', sans-serif; font-weight: 500; font-size: 14.5px; line-height: 1.65;
+    padding: 16px 18px; min-height: 210px;
+  }
+  textarea::placeholder { color: #B7C4DA; }
+  .output-area { flex: 1; padding: 16px 18px; overflow-y: auto; min-height: 210px; }
+  .output-text { margin: 0; font-family: 'Quicksand', sans-serif; font-weight: 500; font-size: 14.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; animation: fadeUp 0.5s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .placeholder { color: var(--muted); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .error-text { color: var(--blue-dark); font-size: 14px; font-weight: 600; white-space: pre-wrap; }
+  .pane-footer { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 2px solid var(--border); }
+  .footer-btns { display: flex; gap: 10px; }
+  .token-tag { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  .ghost-btn {
+    background: var(--card-soft); border: 2px solid var(--border); color: var(--blue-dark); font-size: 12px;
+    font-weight: 700; padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: 'Quicksand', sans-serif;
+    transition: all 0.15s ease;
+  }
+  .ghost-btn:hover { background: var(--border); }
+  .text-btn { background: transparent; border: none; color: var(--muted); font-size: 13px; font-weight: 700; cursor: pointer; padding: 8px 6px; font-family: 'Quicksand', sans-serif; }
+  .text-btn:hover { color: var(--blue-dark); }
+  .primary-btn {
+    background: var(--blue); border: none; color: white; font-size: 14px; font-weight: 700; padding: 10px 22px;
+    border-radius: 999px; cursor: pointer; font-family: 'Quicksand', sans-serif;
+    box-shadow: 0 4px 14px rgba(78,140,255,0.4);
+    transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), background 0.15s ease;
+  }
+  .primary-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.03); background: var(--blue-dark); }
+  .primary-btn:active:not(:disabled) { transform: scale(0.95); }
+  .primary-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+  .changes-box { margin-top: 16px; padding: 18px 22px; animation: fadeUp 0.5s ease; }
+  .changes-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--blue-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .changes-list { margin: 0; padding-left: 0; list-style: none; font-size: 13.5px; line-height: 1.9; font-weight: 500; }
+  .changes-list li { display: flex; gap: 8px; align-items: flex-start; }
+  .changes-list li::before { content: "🌊"; flex-shrink: 0; font-size: 12px; margin-top: 2px; }
+  .notes-text { margin-top: 12px; color: var(--muted); font-size: 12.5px; font-weight: 600; font-style: italic; line-height: 1.6; }
+
+  .page-footer { margin-top: 30px; color: var(--muted); font-size: 11.5px; text-align: center; font-weight: 600; }
+  .page-footer a { color: var(--blue-dark); }
+
+  .confetti-piece { position: fixed; top: -10px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall linear forwards; }
+  @keyframes confettiFall { to { transform: translateY(105vh) rotate(540deg); opacity: 0.3; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <div class="mascot-wrap">
+      <svg id="mascotSvg" class="mascot-bob" width="76" height="76" viewBox="0 0 76 76" fill="none">
+        <ellipse id="mascotBody" cx="38" cy="42" rx="30" ry="26" fill="#4E8CFF"/>
+        <ellipse cx="38" cy="42" rx="30" ry="26" fill="url(#mgrad)" opacity="0.5"/>
+        <circle id="eyeL" cx="28" cy="38" r="4" fill="#1F2B44"/>
+        <circle id="eyeR" cx="48" cy="38" r="4" fill="#1F2B44"/>
+        <path id="mouth" d="M30 50 Q38 56 46 50" stroke="#1F2B44" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="20" cy="46" rx="5" ry="3" fill="#BFDBFF" opacity="0.8"/>
+        <ellipse cx="56" cy="46" rx="5" ry="3" fill="#BFDBFF" opacity="0.8"/>
+        <path d="M18 20 Q22 10 30 14" stroke="#1F2B44" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M58 20 Q54 10 46 14" stroke="#1F2B44" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="mgrad" x1="8" y1="16" x2="68" y2="68">
+            <stop stop-color="#FFC94D"/><stop offset="1" stop-color="#4E8CFF" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div>
+      <div class="eyebrow">🌊 PROMPT TRIMMER</div>
+      <h1>Same meaning.<br/><span class="accent">Fewer tokens.</span></h1>
+    </div>
+  </div>
+  <p class="subtitle">Paste your prompt and watch it shrink — trimmed of filler, kept true to what you actually need. Free to use, no signup required.</p>
+
+  <div class="control-row">
+    <div class="model-toggle" id="modelToggle">
+      <button data-model="llama-3.1-8b-instant" class="active">⚡ Fast</button>
+      <button data-model="llama-3.3-70b-versatile">✨ Better</button>
+    </div>
+    <div class="session-tally" id="sessionTally"></div>
+  </div>
+
+  <div class="card stats-strip">
+    <div class="stat-block">
+      <div class="stat-label">BEFORE</div>
+      <div class="stat-value muted" id="statInput">0</div>
+      <div class="stat-unit">tokens</div>
+    </div>
+    <div class="stats-arrow">→</div>
+    <div class="stat-block">
+      <div class="stat-label">AFTER</div>
+      <div class="stat-value" id="statOutput">—</div>
+      <div class="stat-unit" id="statOutputUnit"></div>
+    </div>
+    <div class="stats-divider"></div>
+    <div class="stat-block">
+      <div class="stat-label">SAVED</div>
+      <div class="stat-value blue" id="statSaved">—</div>
+      <div class="stat-unit" id="statSavedUnit"></div>
+    </div>
+    <div class="ring-wrap" id="ringWrap">
+      <svg width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="var(--border)" stroke-width="6"/>
+        <circle id="ringProgress" cx="26" cy="26" r="22" fill="none" stroke="var(--mint)" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" transform="rotate(-90 26 26)"/>
+      </svg>
+      <div class="ring-label" id="ringLabel">lighter</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="pane card">
+      <div class="pane-header">
+        <span class="pane-label">📝 Original</span>
+        <button class="ghost-btn" id="sampleBtn">Try a sample</button>
+      </div>
+      <textarea id="inputText" placeholder="Paste your prompt here…"></textarea>
+      <div class="pane-footer">
+        <span class="token-tag" id="inputTokenTag">0 tokens (est.)</span>
+        <div class="footer-btns">
+          <button class="text-btn" id="clearBtn">Clear</button>
+          <button class="primary-btn" id="optimizeBtn" disabled>Trim it ✂️</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane card">
+      <div class="pane-header">
+        <span class="pane-label">🌊 Trimmed</span>
+        <button class="ghost-btn" id="copyBtn" style="display:none;">Copy</button>
+      </div>
+      <div class="output-area" id="outputArea">
+        <div class="placeholder">Your lighter prompt shows up here ✨</div>
+      </div>
+      <div class="pane-footer" id="outputFooter" style="display:none;">
+        <span class="token-tag" id="outputTokenTag"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="changes-box card" id="changesBox" style="display:none;">
+    <div class="changes-label">🪄 what got trimmed</div>
+    <ul class="changes-list" id="changesList"></ul>
+    <div class="notes-text" id="notesText"></div>
+  </div>
+
+  <div class="page-footer">
+    Token counts are estimates. Free to use — please be reasonable with traffic while it runs on a free tier.
+  </div>
+</div>
+
+<script>
+// ⚠️ SET THIS after you deploy the Cloudflare Worker (see worker.js).
+// Example: "https://prompt-trimmer.yourname.workers.dev"
+const WORKER_URL = "https://prompt-trimmer-worker.zahoorf6.workers.dev";
+
+const SAMPLE = "Hi there! I hope you're doing well. I was wondering if you could possibly help me out with something. So basically what I need is for you to write a professional email to my team. The email should be about the fact that our project deadline is being moved up by one week, from the 30th to the 23rd. I want the tone to be professional but also not too stiff, and I'd really appreciate it if you could make sure to explain why the deadline changed (the client asked for it) and also mention that we'll need everyone to prioritize their tasks accordingly. Also please make sure it's not too long, maybe like 3-4 sentences would be great. Thank you so much in advance, I really appreciate your help with this!";
+
+const SYSTEM_PROMPT = `You are a prompt-compression engine. You rewrite prompts that will be sent to a large language model so that they use meaningfully fewer tokens while preserving every instruction, constraint, and piece of information that affects the output.
+
+Rules:
+- Preserve all instructions, constraints, examples, formatting requirements, names, numbers, and domain-specific details. Never drop content that changes what the model should produce.
+- Cut filler: pleasantries, throat-clearing, redundant restatements, hedging, unnecessary politeness, and repeated instructions.
+- Prefer imperative phrasing.
+- Use compact structure only where it reduces tokens without losing clarity.
+- Do not change the requested output format, tone requirements, or persona instructions — only compress the wrapper language around them.
+- Do not add new instructions, examples, or caveats that weren't implied by the original.
+- If the prompt is already compact, make only minor trims.
+
+Respond with ONLY a valid JSON object, no markdown fences, no preamble, no explanation before or after, in exactly this shape:
+{"optimized": "the rewritten prompt", "changes": ["short bullet describing a change", "..."], "notes": "one sentence on anything preserved/risked, or empty string"}`;
+
+function estimateTokens(text) {
+  if (!text) return 0;
+  const clean = text.trim();
+  if (!clean) return 0;
+  const words = clean.split(/\s+/).length;
+  const chars = clean.length;
+  return Math.round((chars / 4) * 0.6 + words * 0.7 * 0.4);
+}
+
+function extractJson(raw) {
+  let cleaned = raw.replace(/```json|```/g, "").trim();
+  try { return JSON.parse(cleaned); } catch (e) {}
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    try { return JSON.parse(cleaned.slice(start, end + 1)); } catch (e) {}
+  }
+  throw new Error("Couldn't parse model response: " + cleaned.slice(0, 150));
+}
+
+async function callWorker(userPrompt, model) {
+  if (!WORKER_URL || WORKER_URL.includes("YOUR-WORKER-URL")) {
+    throw new Error("Backend not configured yet — set WORKER_URL in the page source.");
+  }
+  const response = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: 'Optimize this prompt:\n\n"""\n' + userPrompt + '\n"""' },
+      ],
+    }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    const apiMsg = data?.error?.message || ("HTTP " + response.status);
+    throw new Error("Server error: " + apiMsg);
+  }
+  const raw = data?.choices?.[0]?.message?.content || "";
+  if (!raw) throw new Error("Empty response from model.");
+  return extractJson(raw);
+}
+
+function setMascot(state) {
+  const eyeL = document.getElementById("eyeL");
+  const eyeR = document.getElementById("eyeR");
+  const mouth = document.getElementById("mouth");
+  const svg = document.getElementById("mascotSvg");
+  if (state === "thinking") {
+    eyeL.setAttribute("ry", "1.5"); eyeL.setAttribute("cy", "38");
+    eyeR.setAttribute("ry", "1.5"); eyeR.setAttribute("cy", "38");
+    mouth.setAttribute("d", "M32 51 Q38 48 44 51");
+  } else if (state === "happy") {
+    eyeL.setAttribute("ry", "4"); eyeR.setAttribute("ry", "4");
+    mouth.setAttribute("d", "M28 48 Q38 60 48 48");
+    svg.classList.remove("mascot-shrink");
+    void svg.offsetWidth;
+    svg.classList.add("mascot-shrink");
+  } else {
+    eyeL.setAttribute("ry", "4"); eyeR.setAttribute("ry", "4");
+    mouth.setAttribute("d", "M30 50 Q38 56 46 50");
+  }
+}
+
+function burstConfetti() {
+  const colors = ["#4E8CFF", "#FFC94D", "#3FBF9F", "#7FB8FF", "#BFDBFF"];
+  const count = 26;
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.style.left = (45 + Math.random() * 10) + "vw";
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (1.6 + Math.random() * 1.2) + "s";
+    piece.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 3000);
+  }
+}
+
+function animateRing(pct) {
+  const ring = document.getElementById("ringProgress");
+  const circumference = 138.2;
+  const offset = circumference - (Math.min(100, Math.max(0, pct)) / 100) * circumference;
+  ring.style.transition = "stroke-dashoffset 1s cubic-bezier(.34,1.56,.64,1)";
+  requestAnimationFrame(() => { ring.style.strokeDashoffset = offset; });
+}
+
+function animateCount(elId, target, duration) {
+  const node = document.getElementById(elId);
+  const start = performance.now();
+  function step(ts) {
+    const progress = Math.min(1, (ts - start) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    node.textContent = Math.round(target * eased);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+let selectedModel = "llama-3.1-8b-instant";
+let sessionSaved = 0;
+let sessionRuns = 0;
+
+const el = (id) => document.getElementById(id);
+
+document.querySelectorAll("#modelToggle button").forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll("#modelToggle button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedModel = btn.dataset.model;
+  };
+});
+
+function updateOptimizeEnabled() {
+  const hasInput = el("inputText").value.trim().length > 0;
+  el("optimizeBtn").disabled = !hasInput;
+}
+
+el("inputText").addEventListener("input", () => {
+  const t = el("inputText").value;
+  el("statInput").textContent = estimateTokens(t);
+  el("inputTokenTag").textContent = estimateTokens(t) + " tokens (est.)";
+  updateOptimizeEnabled();
+});
+
+el("sampleBtn").onclick = () => {
+  el("inputText").value = SAMPLE;
+  el("inputText").dispatchEvent(new Event("input"));
+  resetOutput();
+};
+
+el("clearBtn").onclick = () => {
+  el("inputText").value = "";
+  el("inputText").dispatchEvent(new Event("input"));
+  resetOutput();
+};
+
+function resetOutput() {
+  el("outputArea").innerHTML = '<div class="placeholder">Your lighter prompt shows up here ✨</div>';
+  el("outputFooter").style.display = "none";
+  el("copyBtn").style.display = "none";
+  el("changesBox").style.display = "none";
+  el("statOutput").textContent = "—";
+  el("statOutput").className = "stat-value";
+  el("statOutputUnit").textContent = "";
+  el("statSaved").textContent = "—";
+  el("statSavedUnit").textContent = "";
+  el("ringWrap").classList.remove("show");
+  setMascot("idle");
+}
+
+el("optimizeBtn").onclick = async () => {
+  const input = el("inputText").value;
+  if (!input.trim()) return;
+  el("optimizeBtn").disabled = true;
+  el("optimizeBtn").textContent = "Trimming…";
+  setMascot("thinking");
+  el("outputArea").innerHTML = '<div class="placeholder">✂️ Snipping the fluff…</div>';
+  el("outputFooter").style.display = "none";
+  el("copyBtn").style.display = "none";
+  el("changesBox").style.display = "none";
+  el("ringWrap").classList.remove("show");
+
+  const before = estimateTokens(input);
+  try {
+    const parsed = await callWorker(input, selectedModel);
+    if (!parsed || typeof parsed.optimized !== "string") {
+      throw new Error("Unexpected response shape: " + JSON.stringify(parsed).slice(0, 200));
+    }
+    const after = estimateTokens(parsed.optimized);
+    const delta = Math.max(0, before - after);
+    const pct = before > 0 ? Math.round((delta / before) * 100) : 0;
+
+    el("outputArea").innerHTML = '<pre class="output-text"></pre>';
+    el("outputArea").querySelector(".output-text").textContent = parsed.optimized;
+    el("outputFooter").style.display = "flex";
+    el("outputTokenTag").textContent = after + " tokens (est.)";
+    el("copyBtn").style.display = "inline-block";
+
+    el("statOutput").className = "stat-value mint";
+    el("statOutputUnit").textContent = "tokens";
+    animateCount("statOutput", after, 700);
+
+    el("statSaved").className = "stat-value blue";
+    el("statSavedUnit").textContent = "tokens (" + pct + "%)";
+    animateCount("statSaved", delta, 900);
+
+    el("ringWrap").classList.add("show");
+    el("ringLabel").textContent = pct + "% lighter";
+    animateRing(pct);
+
+    if (Array.isArray(parsed.changes) && parsed.changes.length > 0) {
+      el("changesBox").style.display = "block";
+      el("changesList").innerHTML = parsed.changes.map((c) => "<li>" + escapeHtml(c) + "</li>").join("");
+      el("notesText").textContent = parsed.notes || "";
+    }
+
+    sessionSaved += delta;
+    sessionRuns += 1;
+    el("sessionTally").classList.add("show");
+    el("sessionTally").innerHTML = "🌊 <b>" + sessionSaved + "</b> tokens saved across <b>" + sessionRuns + "</b> run" + (sessionRuns === 1 ? "" : "s");
+
+    setMascot("happy");
+    burstConfetti();
+  } catch (e) {
+    el("outputArea").innerHTML = '<div class="error-text"></div>';
+    el("outputArea").querySelector(".error-text").textContent = "😬 " + (e?.message || "Couldn't trim that prompt.");
+    setMascot("idle");
+  } finally {
+    el("optimizeBtn").disabled = false;
+    el("optimizeBtn").textContent = "Trim it ✂️";
+    updateOptimizeEnabled();
+  }
+};
+
+el("copyBtn").onclick = async () => {
+  const text = el("outputArea").querySelector(".output-text")?.textContent;
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    el("copyBtn").textContent = "Copied ✓";
+    setTimeout(() => (el("copyBtn").textContent = "Copy"), 1800);
+  } catch (e) {}
+};
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
