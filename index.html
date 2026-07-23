@@ -464,7 +464,6 @@ function renderLifetimeBadge() {
   badge.innerHTML = "🏆 Lifetime: <b>" + cur.tokens.toLocaleString() + " tokens</b> (~$" + cur.cost.toFixed(2) + ") saved across <b>" + cur.runs + "</b> optimization" + (cur.runs === 1 ? "" : "s") + " <button class=\"lifetime-reset\" id=\"lifetimeResetBtn\">reset</button>";
   el("lifetimeResetBtn").onclick = () => { localStorage.removeItem(LS_LIFETIME); renderLifetimeBadge(); };
 }
-renderLifetimeBadge();
 
 /* ---- word-level diff (original vs optimized) ---- */
 function tokenizeForDiff(text) { return text.trim().split(/\s+/).filter(Boolean); }
@@ -524,6 +523,7 @@ function onModeChanged() {
 }
 renderModeCards();
 el("pageHeading").textContent = MODES[selectedMode].description;
+renderLifetimeBadge();
 
 document.querySelectorAll("#modelToggle button").forEach((btn) => {
   btn.onclick = () => {
