@@ -10,20 +10,20 @@
   :root {
     --bg: #EEF2FA; --card: rgba(255,255,255,0.72); --card-solid: #FFFFFF; --card-soft: #E7ECF7;
     --border: rgba(148,163,184,0.35); --text: #101828; --muted: #64748B;
-    --blue: #3B6FD9; --blue-dark: #2C55B0; --teal: #0E9488; --amber: #D97706; --rose: #E1594B;
-    --shadow: 0 8px 28px rgba(59,111,217,0.12); --blur: blur(14px);
+    --blue: #16A34A; --blue-dark: #0F7A38; --teal: #0E9488; --amber: #D97706; --rose: #E1594B;
+    --shadow: 0 8px 28px rgba(22,163,74,0.12); --blur: blur(14px);
   }
   [data-theme="dark"] {
     --bg: #080D18; --card: rgba(20,27,46,0.68); --card-solid: #131A2E; --card-soft: #1A2338;
     --border: rgba(100,120,160,0.22); --text: #E9ECF4; --muted: #8895AA;
-    --blue: #5B8DEF; --blue-dark: #4472D6; --teal: #2DD4BF; --amber: #FBBF24; --rose: #F87171;
+    --blue: #34D399; --blue-dark: #16A34A; --teal: #2DD4BF; --amber: #FBBF24; --rose: #F87171;
     --shadow: 0 8px 32px rgba(0,0,0,0.45);
   }
   * { box-sizing: border-box; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
   ::selection { background: var(--blue); color: #fff; }
   body {
-    margin: 0; background: radial-gradient(circle at 8% 0%, rgba(91,141,239,0.14) 0%, transparent 45%), radial-gradient(circle at 95% 15%, rgba(45,212,191,0.10) 0%, transparent 40%), var(--bg);
+    margin: 0; background: radial-gradient(circle at 8% 0%, rgba(22,163,74,0.14) 0%, transparent 45%), radial-gradient(circle at 95% 15%, rgba(45,212,191,0.10) 0%, transparent 40%), var(--bg);
     color: var(--text); font-family: 'Inter', sans-serif; padding: 24px 14px 90px; min-height: 100vh; transition: background 0.3s ease, color 0.3s ease;
   }
   .container { max-width: 980px; margin: 0 auto; }
@@ -91,7 +91,7 @@
   .optimize-cta-wrap { display: flex; justify-content: center; margin: 18px 0; }
   .optimize-cta {
     background: linear-gradient(135deg, var(--blue), var(--blue-dark)); border: none; color: #fff; font-size: 15px; font-weight: 800;
-    padding: 15px 42px; border-radius: 14px; cursor: pointer; box-shadow: 0 10px 30px rgba(59,111,217,0.35);
+    padding: 15px 42px; border-radius: 14px; cursor: pointer; box-shadow: 0 10px 30px rgba(22,163,74,0.35);
     transition: transform 0.15s ease; font-family: 'Manrope', sans-serif;
   }
   .optimize-cta:hover:not(:disabled) { transform: translateY(-2px); }
@@ -105,6 +105,23 @@
   .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 21px; font-weight: 800; margin-top: 6px; }
   .kpi-value.blue { color: var(--blue); } .kpi-value.teal { color: var(--teal); } .kpi-value.amber { color: var(--amber); } .kpi-value.muted { color: var(--muted); }
   .kpi-sub { font-size: 9.5px; color: var(--muted); margin-top: 2px; }
+
+  .diff-removed { color: var(--muted); text-decoration: line-through; opacity: 0.65; }
+  .diff-added { background: rgba(45,212,191,0.18); color: var(--teal); padding: 0 2px; border-radius: 3px; font-weight: 600; }
+  .diff-text { margin: 0; font-size: 13.5px; line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
+
+  .lifetime-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; margin: 10px 0 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted);
+  }
+  .lifetime-badge b { color: var(--teal); font-weight: 700; }
+  .lifetime-reset { background: none; border: none; color: var(--muted); font-size: 10.5px; text-decoration: underline; cursor: pointer; margin-left: 4px; }
+
+  .scale-card { padding: 16px 18px; margin-top: 10px; }
+  .scale-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .scale-input { width: 70px; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-soft); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: center; outline: none; }
+  .scale-result { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 800; color: var(--teal); }
+  .scale-label { font-size: 12px; color: var(--muted); }
 
   .improve-section { margin-top: 16px; padding: 18px 20px; }
   .improve-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 10px; }
@@ -193,6 +210,7 @@
     </div>
   </div>
   <div class="step2-hint">Or just start typing in the box below.</div>
+  <div class="glass lifetime-badge" id="lifetimeBadge" style="display:none;"></div>
 
   <div class="step-heading"><span class="step-num">3</span><span class="step-title">Optimize</span></div>
   <div class="flow-wrap">
@@ -211,7 +229,10 @@
     <div class="pane glass">
       <div class="pane-header">
         <span class="pane-label">Optimized Prompt</span>
-        <button class="ghost-btn" id="copyBtn" style="display:none;">Copy</button>
+        <div>
+          <button class="ghost-btn" id="diffToggleBtn" style="display:none;">🔍 View Diff</button>
+          <button class="ghost-btn" id="copyBtn" style="display:none;">Copy</button>
+        </div>
       </div>
       <div class="output-area" id="outputArea">
         <div class="placeholder">Your optimized prompt will appear here.</div>
@@ -236,6 +257,17 @@
       <div class="glass kpi-card"><div class="kpi-label">COST SAVED</div><div class="kpi-value teal" id="kpiCost">—</div><div class="kpi-sub">illustrative</div></div>
       <div class="glass kpi-card"><div class="kpi-label">READING TIME</div><div class="kpi-value muted" id="kpiRead">—</div><div class="kpi-sub">optimized</div></div>
       <div class="glass kpi-card"><div class="kpi-label">COMPLEXITY</div><div class="kpi-value muted" id="kpiComplexity">—</div><div class="kpi-sub">optimized</div></div>
+    </div>
+
+    <div class="glass scale-card">
+      <div class="improve-title">💰 Cost at Scale</div>
+      <div class="scale-row">
+        <span class="scale-label">If you run about</span>
+        <input type="number" class="scale-input" id="scalePromptsPerDay" value="20" min="1" />
+        <span class="scale-label">optimized prompts like this per day, that's roughly</span>
+        <span class="scale-result" id="scaleMonthly">$0.00</span>
+        <span class="scale-label">saved per month (22 working days).</span>
+      </div>
     </div>
 
     <div class="glass improve-section">
@@ -410,6 +442,63 @@ function addFavorite(text) { const list = loadList(LS_FAV); list.unshift({ id: D
 function removeFavorite(id) { saveList(LS_FAV, loadList(LS_FAV).filter((i) => i.id !== id)); }
 function pushRecent(text) { const list = loadList(LS_RECENT).filter((i) => i.text !== text); list.unshift({ id: Date.now(), text }); saveList(LS_RECENT, list.slice(0, 10)); }
 
+/* ---- lifetime savings (persists across sessions) ---- */
+const LS_LIFETIME = "promptalpha_lifetime";
+function loadLifetime() {
+  try { return JSON.parse(localStorage.getItem(LS_LIFETIME) || '{"tokens":0,"cost":0,"runs":0}'); }
+  catch (e) { return { tokens: 0, cost: 0, runs: 0 }; }
+}
+function addLifetime(tokens, cost) {
+  const cur = loadLifetime();
+  cur.tokens += Math.max(0, tokens);
+  cur.cost += Math.max(0, cost);
+  cur.runs += 1;
+  localStorage.setItem(LS_LIFETIME, JSON.stringify(cur));
+  return cur;
+}
+function renderLifetimeBadge() {
+  const cur = loadLifetime();
+  const badge = el("lifetimeBadge");
+  if (cur.runs === 0) { badge.style.display = "none"; return; }
+  badge.style.display = "inline-flex";
+  badge.innerHTML = "🏆 Lifetime: <b>" + cur.tokens.toLocaleString() + " tokens</b> (~$" + cur.cost.toFixed(2) + ") saved across <b>" + cur.runs + "</b> optimization" + (cur.runs === 1 ? "" : "s") + " <button class=\"lifetime-reset\" id=\"lifetimeResetBtn\">reset</button>";
+  el("lifetimeResetBtn").onclick = () => { localStorage.removeItem(LS_LIFETIME); renderLifetimeBadge(); };
+}
+renderLifetimeBadge();
+
+/* ---- word-level diff (original vs optimized) ---- */
+function tokenizeForDiff(text) { return text.trim().split(/\s+/).filter(Boolean); }
+function diffWords(a, b) {
+  const dp = Array(a.length + 1).fill(null).map(() => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) {
+    for (let j = b.length - 1; j >= 0; j--) {
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const result = [];
+  let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { result.push({ type: "same", text: a[i] }); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) { result.push({ type: "removed", text: a[i] }); i++; }
+    else { result.push({ type: "added", text: b[j] }); j++; }
+  }
+  while (i < a.length) { result.push({ type: "removed", text: a[i] }); i++; }
+  while (j < b.length) { result.push({ type: "added", text: b[j] }); j++; }
+  return result;
+}
+function renderDiffHtml(originalText, optimizedText) {
+  const diff = diffWords(tokenizeForDiff(originalText), tokenizeForDiff(optimizedText));
+  return diff.map((tok) => {
+    const safe = escapeHtml(tok.text);
+    if (tok.type === "removed") return '<del class="diff-removed">' + safe + "</del>";
+    if (tok.type === "added") return '<ins class="diff-added">' + safe + "</ins>";
+    return safe;
+  }).join(" ");
+}
+let lastOriginalText = "";
+let lastOptimizedText = "";
+let diffModeOn = false;
+
 const el = (id) => document.getElementById(id);
 let selectedModel = "llama-3.1-8b-instant";
 let selectedMode = "equity";
@@ -472,7 +561,10 @@ function resetOutput() {
   el("outputArea").innerHTML = '<div class="placeholder">Your optimized prompt will appear here.</div>';
   el("outputFooter").style.display = "none";
   el("copyBtn").style.display = "none";
+  el("diffToggleBtn").style.display = "none";
   el("reportSection").style.display = "none";
+  diffModeOn = false;
+  el("diffToggleBtn").textContent = "🔍 View Diff";
 }
 
 function escapeHtml(str) { const d = document.createElement("div"); d.textContent = str; return d.innerHTML; }
@@ -504,6 +596,16 @@ el("optimizeBtn").onclick = async () => {
     el("outputFooter").style.display = "flex";
     el("outputTokenTag").textContent = after + " tokens (est.)";
     el("copyBtn").style.display = "inline-block";
+    el("diffToggleBtn").style.display = "inline-block";
+    lastOriginalText = input;
+    lastOptimizedText = parsed.optimized;
+    diffModeOn = false;
+    el("diffToggleBtn").textContent = "🔍 View Diff";
+
+    const lifetime = addLifetime(Math.max(0, delta), Math.max(0, costSaved));
+    renderLifetimeBadge();
+    el("scalePromptsPerDay").dataset.lastCostSaved = Math.max(0, costSaved);
+    updateScaleProjection();
 
     el("reportSection").style.display = "block";
     const qAfter = typeof parsed.qualityScoreAfter === "number" ? parsed.qualityScoreAfter : null;
@@ -545,8 +647,29 @@ el("optimizeBtn").onclick = async () => {
   }
 };
 
+function updateScaleProjection() {
+  const lastCostSaved = parseFloat(el("scalePromptsPerDay").dataset.lastCostSaved || "0");
+  const promptsPerDay = Math.max(0, parseInt(el("scalePromptsPerDay").value, 10) || 0);
+  const monthly = lastCostSaved * promptsPerDay * 22; // illustrative, 22 working days/month
+  el("scaleMonthly").textContent = "$" + monthly.toFixed(2);
+}
+el("scalePromptsPerDay").addEventListener("input", updateScaleProjection);
+
+el("diffToggleBtn").onclick = () => {
+  diffModeOn = !diffModeOn;
+  if (diffModeOn) {
+    el("outputArea").innerHTML = '<pre class="diff-text"></pre>';
+    el("outputArea").querySelector(".diff-text").innerHTML = renderDiffHtml(lastOriginalText, lastOptimizedText);
+    el("diffToggleBtn").textContent = "✕ Show Clean";
+  } else {
+    el("outputArea").innerHTML = '<pre class="output-text"></pre>';
+    el("outputArea").querySelector(".output-text").textContent = lastOptimizedText;
+    el("diffToggleBtn").textContent = "🔍 View Diff";
+  }
+};
+
 el("copyBtn").onclick = async () => {
-  const text = el("outputArea").querySelector(".output-text")?.textContent;
+  const text = lastOptimizedText;
   if (!text) return;
   try { await navigator.clipboard.writeText(text); el("copyBtn").textContent = "Copied ✓"; setTimeout(() => (el("copyBtn").textContent = "Copy"), 1800); } catch (e) {}
 };
