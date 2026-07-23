@@ -61,7 +61,7 @@
   }
   .tool-btn:hover { transform: translateY(-1px); }
   .tool-btn.accent { background: var(--blue); color: #fff; border-color: transparent; }
-  .model-toggle { display: flex; gap: 3px; background: var(--card); backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 12px; padding: 4px; box-shadow: var(--shadow); margin-left: auto; }
+  .model-toggle { display: flex; gap: 3px; background: var(--card); backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 12px; padding: 4px; box-shadow: var(--shadow); }
   .model-toggle button { background: transparent; border: none; color: var(--muted); font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
   .model-toggle button.active { background: var(--blue); color: #fff; }
   .step2-hint { font-size: 12px; color: var(--muted); margin: 4px 0 16px 2px; }
@@ -204,9 +204,13 @@
     <button class="tool-btn accent" id="openLibraryBtn">📚 Load Sample</button>
     <button class="tool-btn" id="openWizardBtn">🧭 Build Prompt</button>
     <button class="tool-btn" id="openFavBtn">★ Saved</button>
-    <div class="model-toggle" id="modelToggle">
-      <button data-model="llama-3.1-8b-instant" class="active">⚡ Fast</button>
-      <button data-model="llama-3.3-70b-versatile">✦ Better</button>
+    <div class="model-toggle" id="providerToggle">
+      <button data-provider="gemini" class="active">Gemini</button>
+      <button data-provider="groq">Groq</button>
+    </div>
+    <div class="model-toggle" id="qualityToggle">
+      <button data-quality="fast" class="active">⚡ Fast</button>
+      <button data-quality="better">✦ Better</button>
     </div>
   </div>
   <div class="step2-hint">Or just start typing in the box below.</div>
@@ -499,7 +503,15 @@ let lastOptimizedText = "";
 let diffModeOn = false;
 
 const el = (id) => document.getElementById(id);
-let selectedModel = "llama-3.1-8b-instant";
+
+const MODEL_TABLE = {
+  gemini: { fast: "gemini-2.5-flash-lite", better: "gemini-2.5-flash" },
+  groq: { fast: "llama-3.1-8b-instant", better: "llama-3.3-70b-versatile" },
+};
+let selectedProvider = "gemini";
+let selectedQuality = "fast";
+function currentModel() { return MODEL_TABLE[selectedProvider][selectedQuality]; }
+
 let selectedMode = "equity";
 
 function renderModeCards() {
@@ -525,11 +537,18 @@ renderModeCards();
 el("pageHeading").textContent = MODES[selectedMode].description;
 renderLifetimeBadge();
 
-document.querySelectorAll("#modelToggle button").forEach((btn) => {
+document.querySelectorAll("#providerToggle button").forEach((btn) => {
   btn.onclick = () => {
-    document.querySelectorAll("#modelToggle button").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll("#providerToggle button").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
-    selectedModel = btn.dataset.model;
+    selectedProvider = btn.dataset.provider;
+  };
+});
+document.querySelectorAll("#qualityToggle button").forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll("#qualityToggle button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedQuality = btn.dataset.quality;
   };
 });
 
@@ -581,7 +600,7 @@ el("optimizeBtn").onclick = async () => {
 
   const before = estimateTokens(input);
   try {
-    const parsed = await callWorker(input, selectedModel, selectedMode);
+    const parsed = await callWorker(input, currentModel(), selectedMode);
     if (!parsed || typeof parsed.optimized !== "string") throw new Error("Unexpected response shape: " + JSON.stringify(parsed).slice(0, 200));
     const after = estimateTokens(parsed.optimized);
     const delta = before - after;
